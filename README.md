@@ -8,26 +8,75 @@ At start you have to create config.py in the root directory of the project, whic
 ```python
 class Config:
     APP_NAME = '<application name>'
+    HOME_DIR = '/srv/{}'.format(APP_NAME)
     CERTIFICATE_PATH = '<SSL certificate location>'
+    NGINX_CONFIG_PATH = '<Nginx config location'
     TELEGRAM_TOKEN = '<telegram token>'
     URL = '<server URL>'
     WOLFRAM_APP_ID = '<application ID from WolframAlpha>'
-    BOT_LOG_PATH = '<logging file location>'
+    LOG_DIR = '/var/log/{}'.format(APP_NAME)
+    UWSGI_LOG_PATH = '{}/uwsgi.log'.format(LOG_DIR)
+    BOT_LOG_PATH = '{}/bot.log'.format(LOG_DIR)
 ```
 Commentary:
 1. _APP_NAME_ can be any string that you like;
-2. _CERTIFICATE_PATH_ is a location of your SSL certificate. You can use self-signed certificate, get free one from [Let's Encrypt](https://letsencrypt.org/) or buy it;
-3. _TELEGRAM_TOKEN_ is a token of your bot. Use [@BotFather](https://t.me/botfather) to get it;
-4. _URL_ contains location of your bot and includes port number (if it's not default);
-5. _WOLFRAM_APP_ID_ is an ID of your WolframAlpha app. Visit [WolframAlpha API](https://products.wolframalpha.com/api/) and register your app to get this ID;
-6. _BOT_LOG_PATH_ is a location of logger. Notice, that this file should be able to write for the user which executes this bot.
+2. _NGINX_CONFIG_PATH_ is a location of Nginx config. I recommend use this location "/etc/nginx/sites-available/bots.conf" for multiple bots 
+3. _CERTIFICATE_PATH_ is a location of your SSL certificate. You can use self-signed certificate, get free one from [Let's Encrypt](https://letsencrypt.org/) or buy it;
+4. _TELEGRAM_TOKEN_ is a token of your bot. Use [@BotFather](https://t.me/botfather) to get it;
+5. _URL_ contains location of your bot and includes port number (if it's not default);
+6. _WOLFRAM_APP_ID_ is an ID of your WolframAlpha app. Visit [WolframAlpha API](https://products.wolframalpha.com/api/) and register your app to get this ID;
+7. _LOG_DIR_ is a directory with logging files. Notice, that this file should be able to write for the user which executes this bot. 
 
-Then Python 3 should be also already installed. Use pip to install dependencies:
+Python 3, Nginx should be already installed. Use the following commands to create new user for the application.
 ```bash
-pip install -r requirements.txt # alternatively try pip3
+sudo python3 create_user.py
 ```
-It's recommended to use [virtual environment](https://docs.python.org/3/tutorial/venv.html) for better isolation. 
 
-After that, install and configure a web-server. It's recommended to use Nginx and uWSGI (the last has been already included to requirments.txt). Here is the [tutorial](https://www.digitalocean.com/community/tutorials/how-to-deploy-python-wsgi-applications-using-uwsgi-web-server-with-nginx).
+Copy files of the project in to the <HOME_DIR> directory.
+```bash
+sudo cp -a <src> <HOME_DIR> 
+```
+
+Then log in as user that was created at the previous step. Create virtual environment and use pip to install dependencies:
+```bash
+sudo su - <APP_NAME> -s /bin/bash
+virtualenv -p python3 venv
+source venv/bin/activate
+pip install -r requirements.txt
+exit
+``` 
+
+I recommend you to use reverse proxy, so Nginx config must contain the following strings:
+```text
+server {
+    listen 443 default ssl;
+    server_name <URL>;
+    
+    keepalive_timeout 60;
+    ssl_certificate <CERTIFICATE_PATH>;
+    ssl_certificate_key <PRIVATE_KEY_PATH>;
+    ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+    ssl_ciphers  "HIGH:!RC4:!aNULL:!MD5:!kEDH";
+    add_header Strict-Transport-Security 'max-age=604800';
+    
+    access_log /var/log/nginx_access.log;
+    error_log /var/log/nginx_error.log;
+}
+```
+After that, configure Nginx and uWSGI using _**deploy.py**_ script:
+```bash
+sudo su
+cd <HOME_DIR>
+source venv/bin/activate 
+python deploy.py
+exit
+```
+
+# How to manage
+Service of the bot will be created after installation. To stop it just type in the terminal:
+```bash
+sudo systemctl stop <APP_NAME>
+``` 
+Another options is provided by [systemctl](https://www.unix.com/man-page/centos/1/systemctl/) program
 
 Enjoy! (:
