@@ -42,7 +42,7 @@ if __name__ == '__main__':
         'uid = {}\n' \
         'gid = www-data\n' \
         'master = true\n' \
-        'processes = 5\n' \
+        'processes = 1\n' \
         'socket = /tmp/{}.sock\n' \
         'chmod-socket = 660\n' \
         'chwon-socket = {}:www-data\n' \
