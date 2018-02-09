@@ -1,9 +1,10 @@
-from app.telegram_tools import send_typing, write_logs
+from app.tools import send_typing, write_logs
+from app.wolfram import make_wolfram_query
 
 
 @write_logs
 @send_typing
-def handle_start(bot, update):
+def start(bot, update):
     chat_id = update.message.chat_id
     bot.send_message(
         chat_id=chat_id,
@@ -18,7 +19,7 @@ def handle_start(bot, update):
 
 @write_logs
 @send_typing
-def handle_help(bot, update):
+def help(bot, update):
     chat_id = update.message.chat_id
     bot.send_message(
         chat_id=chat_id,
@@ -33,7 +34,7 @@ def handle_help(bot, update):
 
 @write_logs
 @send_typing
-def handle_examples(bot, update):
+def examples(bot, update):
     chat_id = update.message.chat_id
     bot.send_message(
         chat_id=chat_id,
@@ -51,3 +52,32 @@ def handle_examples(bot, update):
         parse_mode='Markdown',
         disable_web_page_preview=True
     )
+
+
+@write_logs
+@send_typing
+def wolfram_query(bot, update):
+    chat_id = update.message.chat_id
+    text = update.message.text
+    answer = make_wolfram_query(text)
+    if answer.error or not answer.success:
+        bot.send_message(
+            chat_id=chat_id,
+            text='Unsuccessful. Check your request and try again. Use /help '
+                 'to see manual'
+        )
+        return
+    for pod in answer.pods:
+        title = pod.title
+        bot.send_message(chat_id=chat_id, text=title)
+        for sub in pod.subpods:
+            text = sub.plaintext
+            if text:
+                bot.send_message(chat_id=chat_id, text=text)
+            image_src = sub.img.src
+            if image_src:
+                bot.send_document(
+                    chat_id=chat_id,
+                    document=image_src,
+                    timeout=15
+                )

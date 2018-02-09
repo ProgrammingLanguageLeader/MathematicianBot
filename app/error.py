@@ -12,7 +12,7 @@ def error_handler(bot, update, error):
     try:
         raise error
     except NetworkError:
-        logger.debug('Update %s caused %s error' % (update, error))
+        logger.exception('Update %s caused %s error' % (update, error))
         sleep(1)
         dispatcher = Dispatcher.get_instance()
         dispatcher.process_update(update)

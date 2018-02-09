@@ -27,6 +27,18 @@ Commentary:
 6. _WOLFRAM_APP_ID_ is an ID of your WolframAlpha app. Visit [WolframAlpha API](https://products.wolframalpha.com/api/) and register your app to get this ID;
 7. _LOG_DIR_ is a directory with logging files. Notice, that this file should be able to write for the user which executes this bot. 
 
+## Long polling
+Python 3 should be already installed. Create virtual environment and use pip to install dependencies. Example on Linux:
+```bash
+virtualenv -p python3 venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+You can install dependencies without virtual environment, but it's not recommended.
+
+## Webhook
+This is a guide about installation of this bot on Linux server.
+
 Python 3, Nginx should be already installed. Use the following commands to create new user for the application.
 ```bash
 sudo python3 create_user.py
@@ -46,7 +58,7 @@ pip install -r requirements.txt
 exit
 ``` 
 
-I recommend you to use reverse proxy, so Nginx config must contain the following strings:
+It's recommended to use reverse proxy, so Nginx config must contain the following strings:
 ```text
 server {
     listen 443 default ssl;
@@ -71,12 +83,19 @@ source venv/bin/activate
 python deploy.py
 exit
 ```
-
 # How to manage
+
+## Long polling
+Activate virtual environment and launch _**polling.py**_ script to start the application. Example on Linux:
+```bash
+source venv/bin/activate
+python polling.py
+```
+Press Ctrl + C to stop the bot. 
+
+## Webhook
 Service of the bot will be created after installation. To stop it just type in the terminal:
 ```bash
 sudo systemctl stop <APP_NAME>
 ``` 
 Another options is provided by [systemctl](https://www.unix.com/man-page/centos/1/systemctl/) program
-
-Enjoy! (:
