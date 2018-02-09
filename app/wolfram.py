@@ -45,7 +45,7 @@ class WolframImage(OrderedDict):
         self.src = parsed_img['@src']
 
 
-def make_query(query):
+def make_wolfram_query(query):
     params = {
         'input': query,
         'appid': Config.WOLFRAM_APP_ID

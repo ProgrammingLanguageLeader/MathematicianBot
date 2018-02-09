@@ -1,22 +1,30 @@
-from flask import Flask, request
-from telegram import Update
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 
 from config import Config
-from app.logger import setup_logger
-from app.webhook import setup_webhook
+from app.error import error_handler
+from app.logic import help, examples, start, wolfram_query
 
 
-app = Flask(__name__)
-logger = setup_logger()
-logger.info('Application started')
-dispatcher = setup_webhook()
+def init_updater():
+    updater = Updater(Config.TELEGRAM_TOKEN)
+    updater.bot.delete_webhook()
+    dispatcher = updater.dispatcher
+    add_handlers(dispatcher)
+    return updater
 
 
-@app.route('/%s' % Config.TELEGRAM_TOKEN, methods=['POST'])
-def handle_webhook():
-    update = Update.de_json(
-        request.get_json(force=True),
-        dispatcher.bot
+def add_handlers(dispatcher):
+    dispatcher.add_handler(
+        CommandHandler('start', start)
     )
-    dispatcher.process_update(update)
-    return 'OK'
+    dispatcher.add_handler(
+        CommandHandler('help', help)
+    )
+    dispatcher.add_handler(
+        CommandHandler('examples', examples)
+    )
+    dispatcher.add_handler(
+        MessageHandler(Filters.text, wolfram_query)
+    )
+    dispatcher.add_error_handler(error_handler)
+    return dispatcher
