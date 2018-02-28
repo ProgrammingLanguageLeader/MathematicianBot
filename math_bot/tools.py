@@ -31,7 +31,7 @@ def write_logs(func):
     return decorated
 
 
-def add_new_user(mode):
+def remember_new_user(simple_mode):
     def arg_decorator(func):
         @wraps(func)
         def func_decorator(bot, update):
@@ -42,7 +42,7 @@ def add_new_user(mode):
                 db.session.add(
                     User(
                         telegram_id=update.message.from_user.id,
-                        mode=mode
+                        simple_mode=simple_mode
                     )
                 )
                 db.session.commit()

@@ -1,38 +1,74 @@
+from telegram import ReplyKeyboardMarkup, KeyboardButton
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, \
     ConversationHandler
 
 from math_bot.app import db
-from math_bot.tools import send_typing, write_logs, add_new_user
+from math_bot.tools import send_typing, write_logs, remember_new_user
 from math_bot.wolfram import make_wolfram_query
 from math_bot.models import User
 from math_bot.error import error_handler
-from math_bot.conversation_states import ConversationStates
 from config import Config
 
 
+START_MENU, MANUAL, INTEGRAL, DERIVATIVE, LIMIT, \
+SUM, PLOT, SOLVE_EQUATION, TAYLOR_SERIES, EXTREMA, *_ = range(100)
+
+
 @write_logs
 @send_typing
-@add_new_user(ConversationStates.SIMPLE_MODE)
+@remember_new_user(simple_mode=True)
 def start(bot, update):
     chat_id = update.message.chat_id
+    buttons = [
+        KeyboardButton('Integral'),
+        KeyboardButton('Derivative'),
+        KeyboardButton('Limit'),
+        KeyboardButton('Sum'),
+        KeyboardButton('Plot'),
+        KeyboardButton('Solve equation'),
+        KeyboardButton('Extrema'),
+        KeyboardButton('Taylor series'),
+        KeyboardButton('Manual query'),
+        KeyboardButton('Examples'),
+        KeyboardButton('Help'),
+        KeyboardButton('Cancel')
+    ]
+    keyboard = [buttons[i:i + 3] for i in range(0, len(buttons), 3)]
+    reply_markup = ReplyKeyboardMarkup(keyboard)
     bot.send_message(
         chat_id=chat_id,
-        text='Hello! I am mathematical bot. I was created '
-             'to help people solve different tasks in '
-             'mathematics. You can type /help to learn '
-             'more about my functionality. To see examples '
-             'use command /examples. Hope, you will like '
-             'it. Good luck!'
+        text='Choose one of the following options',
+        reply_markup=reply_markup
     )
-    current_user = db.session.query(User).filter_by(
-        telegram_id=update.message.from_user.id
-    ).all()[0]
-    return current_user.mode
+    return START_MENU
+
+
+def start_menu(bot, update):
+    text = update.message.text
+    if text == 'Examples':
+        return examples(bot, update)
+    if text == 'Help':
+        return help(bot, update)
+    if text == 'Cancel':
+        return cancel(bot, update)
+
+    next_state = {
+        'Integral': INTEGRAL,
+        'Derivative': DERIVATIVE,
+        'Limit': LIMIT,
+        'Sum': SUM,
+        'Plot': PLOT,
+        'Solve equation': SOLVE_EQUATION,
+        'Extrema': EXTREMA,
+        'Taylor series': TAYLOR_SERIES,
+        'Manual query': MANUAL
+    }
+    return next_state[text]
 
 
 @write_logs
 @send_typing
-@add_new_user(ConversationStates.SIMPLE_MODE)
+@remember_new_user(simple_mode=True)
 def help(bot, update):
     chat_id = update.message.chat_id
     bot.send_message(
@@ -54,7 +90,7 @@ def help(bot, update):
 
 @write_logs
 @send_typing
-@add_new_user(ConversationStates.SIMPLE_MODE)
+@remember_new_user(simple_mode=True)
 def examples(bot, update):
     chat_id = update.message.chat_id
     bot.send_message(
@@ -81,37 +117,32 @@ def examples(bot, update):
 
 @write_logs
 @send_typing
-@add_new_user(ConversationStates.DETAILED_MODE)
 def detailed_mode(bot, update):
     db.session.query(User).filter_by(
         telegram_id=update.message.from_user.id
-    ).update(dict(mode=ConversationStates.DETAILED_MODE))
+    ).update(dict(simple_mode=False))
     db.session.commit()
     bot.send_message(
         chat_id=update.message.chat_id,
         text='Switched to detailed mode'
     )
-    return ConversationStates.DETAILED_MODE
 
 
 @write_logs
 @send_typing
-@add_new_user(ConversationStates.SIMPLE_MODE)
 def simple_mode(bot, update):
     db.session.query(User).filter_by(
         telegram_id=update.message.from_user.id
-    ).update(dict(mode=ConversationStates.SIMPLE_MODE))
+    ).update(dict(simple_mode=True))
     db.session.commit()
     bot.send_message(
         chat_id=update.message.chat_id,
         text='Switched to simple mode'
     )
-    return ConversationStates.SIMPLE_MODE
 
 
 @write_logs
 @send_typing
-@add_new_user(ConversationStates.SIMPLE_MODE)
 def detailed_wolfram_query(bot, update):
     chat_id = update.message.chat_id
     text = update.message.text
@@ -137,12 +168,11 @@ def detailed_wolfram_query(bot, update):
                     document=image_src,
                     timeout=15
                 )
-    return ConversationStates.DETAILED_MODE
+    # return ConversationStates.DETAILED_MODE
 
 
 @write_logs
 @send_typing
-@add_new_user(ConversationStates.SIMPLE_MODE)
 def simple_wolfram_query(bot, update):
     chat_id = update.message.chat_id
     text = update.message.text
@@ -168,7 +198,16 @@ def simple_wolfram_query(bot, update):
                     document=image_src,
                     timeout=15
                 )
-    return ConversationStates.SIMPLE_MODE
+
+
+@write_logs
+@send_typing
+def cancel(bot, update):
+    bot.send_message(
+        chat_id=update.message.chat_id,
+        text='Conversation was canceled. To start a new one use /start'
+    )
+    return ConversationHandler.END
 
 
 def init_updater():
@@ -177,28 +216,45 @@ def init_updater():
     conversation_handler = ConversationHandler(
         entry_points=[
             CommandHandler('start', start),
-            CommandHandler('help', help),
-            CommandHandler('examples', examples),
-            MessageHandler(Filters.text, simple_wolfram_query)
         ],
         states={
-            ConversationStates.SIMPLE_MODE: [
-                CommandHandler('help', help),
-                CommandHandler('examples', examples),
-                CommandHandler('detailed_mode', detailed_mode),
-                MessageHandler(Filters.text, simple_wolfram_query)
+            START_MENU: [
+                MessageHandler(Filters.text, start_menu)
             ],
-            ConversationStates.DETAILED_MODE: [
-                CommandHandler('help', help),
-                CommandHandler('examples', examples),
-                CommandHandler('simple_mode', simple_mode),
-                MessageHandler(Filters.text, detailed_wolfram_query)
+            MANUAL: [
+
+            ],
+            INTEGRAL: [
+
+            ],
+            DERIVATIVE: [
+
+            ],
+            LIMIT: [
+
+            ],
+            SUM: [
+
+            ],
+            PLOT: [
+
+            ],
+            SOLVE_EQUATION: [
+
+            ],
+            TAYLOR_SERIES: [
+
+            ],
+            EXTREMA: [
+
             ]
         },
-        fallbacks=[]
+        fallbacks=[
+            CommandHandler('cancel', cancel)
+        ]
     )
+    dispatcher.add_handler(CommandHandler('simple_mode', simple_mode))
+    dispatcher.add_handler(CommandHandler('detailed_mode', detailed_mode))
     dispatcher.add_handler(conversation_handler)
     dispatcher.add_error_handler(error_handler)
     return updater
-
-

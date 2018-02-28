@@ -1,7 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
 
-from math_bot.conversation_states import ConversationStates
-
 
 db = SQLAlchemy()
 
@@ -17,9 +15,8 @@ class User(db.Model):
         unique=True,
         nullable=False
     )
-    mode = db.Column(
-        db.Enum(ConversationStates),
-        nullable=False
+    simple_mode = db.Column(
+        db.Boolean
     )
 
     def __repr__(self):
