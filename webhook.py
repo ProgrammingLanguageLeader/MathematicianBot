@@ -8,6 +8,10 @@ from math_bot.logic import init_updater
 from config import Config
 
 
+logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    level=logging.INFO
+)
 updater = init_updater()
 updater.start_webhook(
     listen='0.0.0.0',
@@ -17,10 +21,7 @@ updater.start_webhook(
 updater.bot.set_webhook(
     url='{}/{}'.format(Config.URL, Config.TELEGRAM_TOKEN)
 )
-logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    level=logging.INFO
-)
+updater.idle()
 
 
 @app.route('/{}'.format(Config.TELEGRAM_TOKEN), methods=['POST'])
