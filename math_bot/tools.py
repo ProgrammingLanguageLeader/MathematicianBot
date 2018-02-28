@@ -2,6 +2,9 @@ import logging
 from telegram import ChatAction
 from functools import wraps
 
+from math_bot.app import db
+from math_bot.models import User
+
 
 def send_typing(func):
     @wraps(func)
@@ -26,3 +29,23 @@ def write_logs(func):
         )
         return func(bot, update)
     return decorated
+
+
+def add_new_user(mode):
+    def arg_decorator(func):
+        @wraps(func)
+        def func_decorator(bot, update):
+            current_user = db.session.query(User).filter_by(
+                telegram_id=update.message.from_user.id
+            ).all()
+            if not current_user:
+                db.session.add(
+                    User(
+                        telegram_id=update.message.from_user.id,
+                        mode=mode
+                    )
+                )
+                db.session.commit()
+            return func(bot, update)
+        return func_decorator
+    return arg_decorator
