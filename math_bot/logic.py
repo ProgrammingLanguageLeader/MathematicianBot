@@ -44,8 +44,7 @@ def help(bot, update):
              'the examples just type /examples. Almost I support 2 '
              'modes: simple and detailed. Commands /simple_mode and '
              '/detailed_mode enables you to switch between them. '
-             'Simple mode is using by default',
-        parse_mode='Markdown'
+             'Simple mode is using by default'
     )
     current_user = db.session.query(User).filter_by(
         telegram_id=update.message.from_user.id
