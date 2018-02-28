@@ -1,6 +1,7 @@
 from flask import request
 from telegram import Update
 import logging
+import os
 
 from math_bot.app import app
 from math_bot.logic import init_updater
@@ -8,7 +9,11 @@ from config import Config
 
 
 updater = init_updater()
-updater.bot.delete_webhook()
+updater.start_webhook(
+    listen='0.0.0.0',
+    port=int(os.environ.get('PORT', '8443')),
+    url_path=Config.TELEGRAM_TOKEN
+)
 updater.bot.set_webhook(
     url='{}/{}'.format(Config.URL, Config.TELEGRAM_TOKEN)
 )
