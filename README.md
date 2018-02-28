@@ -51,6 +51,6 @@ Also you can host the bot on [Heroku](https://dashboard.heroku.com/). Sign up on
 ```bash
 heroku login
 heroku create <your app name>
-git push heroku origin
+git push heroku master
 ```
 Enjoy (:
