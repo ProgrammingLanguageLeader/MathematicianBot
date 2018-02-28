@@ -4,30 +4,18 @@ This bot can solve different tasks using computational knowledge engine [Wolfram
 
 # How to install
 
-At start you have to create config.py in the root directory of the project, which will have settings of the application:
-```python
-class Config:
-    APP_NAME = '<application name>'
-    HOME_DIR = '/srv/{}'.format(APP_NAME)
-    CERTIFICATE_PATH = '<SSL certificate location>'
-    NGINX_CONFIG_PATH = '<Nginx config location'
-    TELEGRAM_TOKEN = '<telegram token>'
-    URL = '<server URL>'
-    WOLFRAM_APP_ID = '<application ID from WolframAlpha>'
-    LOG_DIR = '/var/log/{}'.format(APP_NAME)
-    UWSGI_LOG_PATH = '{}/uwsgi.log'.format(LOG_DIR)
-    BOT_LOG_PATH = '{}/bot.log'.format(LOG_DIR)
-```
-Commentary:
-1. _APP_NAME_ can be any string that you like;
-2. _NGINX_CONFIG_PATH_ is a location of Nginx config. I recommend use this location "/etc/nginx/sites-available/bots.conf" for multiple bots 
-3. _CERTIFICATE_PATH_ is a location of your SSL certificate. You can use self-signed certificate, get free one from [Let's Encrypt](https://letsencrypt.org/) or buy it;
-4. _TELEGRAM_TOKEN_ is a token of your bot. Use [@BotFather](https://t.me/botfather) to get it;
-5. _URL_ contains location of your bot and includes port number (if it's not default);
-6. _WOLFRAM_APP_ID_ is an ID of your WolframAlpha app. Visit [WolframAlpha API](https://products.wolframalpha.com/api/) and register your app to get this ID;
-7. _LOG_DIR_ is a directory with logging files. Notice, that this file should be able to write for the user which executes this bot. 
+Setup the following environment variables:
+1. MATH_BOT_TOKEN - telegram token of the bot. It can be obtained from [BotFather](https://t.me/botfather).
+2. WOLFRAM_APP_ID - an ID of the Wolfram Alpha application. Visit [WolframAlpha API](https://products.wolframalpha.com/api/) and register your app to get it.
+3. MATH_BOT_DATABASE_URL - path to the database. 
+4. _*(if you will host the app using VDS)*_ CERTIFICATE_PATH - path to your SSL certificate
+5. _*(if you will host the app using VDS)*_ URL - URL of the hosting server
 
-## Long polling
+Setup environment variables on Linux:
+```bash
+export <NAME>=<VALUE>
+```  
+
 Python 3 should be already installed. Create virtual environment and use pip to install dependencies. Example on Linux:
 ```bash
 virtualenv -p python3 venv
