@@ -1,5 +1,13 @@
+from enum import Enum, unique
+
 from app.tools import send_typing, write_logs
 from app.wolfram import make_wolfram_query
+
+
+@unique
+class ConversationStates(Enum):
+    SIMPLE_MODE = 0
+    DETAILED_MODE = 1
 
 
 @write_logs
@@ -56,7 +64,19 @@ def examples(bot, update):
 
 @write_logs
 @send_typing
-def wolfram_query(bot, update):
+def detailed_mode(bot, update):
+    pass
+
+
+@write_logs
+@send_typing
+def simple_mode(bot, update):
+    pass
+
+
+@write_logs
+@send_typing
+def detailed_wolfram_query(bot, update):
     chat_id = update.message.chat_id
     text = update.message.text
     answer = make_wolfram_query(text)
@@ -68,6 +88,35 @@ def wolfram_query(bot, update):
         )
         return
     for pod in answer.pods:
+        title = pod.title
+        bot.send_message(chat_id=chat_id, text=title)
+        for sub in pod.subpods:
+            text = sub.plaintext
+            if text:
+                bot.send_message(chat_id=chat_id, text=text)
+            image_src = sub.img.src
+            if image_src:
+                bot.send_document(
+                    chat_id=chat_id,
+                    document=image_src,
+                    timeout=15
+                )
+
+
+@write_logs
+@send_typing
+def simple_wolfram_query(bot, update):
+    chat_id = update.message.chat_id
+    text = update.message.text
+    answer = make_wolfram_query(text)
+    if answer.error or not answer.success:
+        bot.send_message(
+            chat_id=chat_id,
+            text='Unsuccessful. Check your request and try again. Use /help '
+                 'to see manual'
+        )
+        return
+    for pod in answer.pods[:2]:
         title = pod.title
         bot.send_message(chat_id=chat_id, text=title)
         for sub in pod.subpods:
