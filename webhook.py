@@ -1,12 +1,12 @@
-from flask import Flask, request
+from flask import request
 from telegram import Update
 import logging
 
-from app.bot import init_updater
+from math_bot.app import app
+from math_bot.logic import init_updater
 from config import Config
 
 
-app = Flask(__name__)
 updater = init_updater()
 updater.bot.set_webhook(
     url='https://%s/%s' % (Config.URL, Config.TELEGRAM_TOKEN),
