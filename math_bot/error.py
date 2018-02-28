@@ -1,4 +1,3 @@
-from telegram.ext import Dispatcher
 from telegram.error import TelegramError, NetworkError
 from time import sleep
 import logging
