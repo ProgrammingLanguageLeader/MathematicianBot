@@ -8,6 +8,7 @@ from config import Config
 
 
 updater = init_updater()
+updater.bot.delete_webhook()
 updater.bot.set_webhook(
     url='{}/{}'.format(Config.URL, Config.TELEGRAM_TOKEN)
 )
