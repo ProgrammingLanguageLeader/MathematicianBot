@@ -9,7 +9,7 @@ from config import Config
 
 updater = init_updater()
 updater.bot.set_webhook(
-    url='https://%s/%s' % (Config.URL, Config.TELEGRAM_TOKEN)
+    url='{}/{}'.format(Config.URL, Config.TELEGRAM_TOKEN)
 )
 logging.basicConfig(
     filename=Config.BOT_LOG_PATH,
