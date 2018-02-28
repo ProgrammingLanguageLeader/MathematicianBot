@@ -173,13 +173,7 @@ def simple_wolfram_query(bot, update):
 
 def init_updater():
     updater = Updater(Config.TELEGRAM_TOKEN)
-    updater.bot.delete_webhook()
     dispatcher = updater.dispatcher
-    add_handlers(dispatcher)
-    return updater
-
-
-def add_handlers(dispatcher):
     conversation_handler = ConversationHandler(
         entry_points=[
             CommandHandler('start', start),
@@ -205,5 +199,6 @@ def add_handlers(dispatcher):
     )
     dispatcher.add_handler(conversation_handler)
     dispatcher.add_error_handler(error_handler)
-    return dispatcher
+    return updater
+
 

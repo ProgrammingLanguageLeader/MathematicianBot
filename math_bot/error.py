@@ -9,7 +9,7 @@ def error_handler(bot, update, error):
     except NetworkError:
         sleep(1)
         bot.send_message(
-            text='A network error occurred. Trying to answer again',
+            text='A network error occurred. Try again later',
             chat_id=update.message.chat_id
         )
     except TelegramError:
