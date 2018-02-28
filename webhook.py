@@ -12,7 +12,6 @@ updater.bot.set_webhook(
     url='{}/{}'.format(Config.URL, Config.TELEGRAM_TOKEN)
 )
 logging.basicConfig(
-    filename=Config.BOT_LOG_PATH,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     level=logging.INFO
 )
