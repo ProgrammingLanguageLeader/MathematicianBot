@@ -8,8 +8,7 @@ Setup the following environment variables:
 1. MATH_BOT_TOKEN - telegram token of the bot. It can be obtained from [BotFather](https://t.me/botfather).
 2. WOLFRAM_APP_ID - an ID of the Wolfram Alpha application. Visit [WolframAlpha API](https://products.wolframalpha.com/api/) and register your app to get it.
 3. MATH_BOT_DATABASE_URL - path to the database. 
-4. _*(if you will host the app using VDS)*_ CERTIFICATE_PATH - path to your SSL certificate
-5. _*(if you will host the app using VDS)*_ URL - URL of the hosting server
+4. URL - URL of the hosting server. If you are using long polling method, you may do not specify this.
 
 Setup environment variables on Linux:
 ```bash
@@ -32,4 +31,17 @@ python polling.py
 ```
 
 ## Webhook
-Coming soon  
+If you are using nginx, then you need to configure path to the SSL certificate and private key. For example
+```text
+server {
+    listen              443 ssl;
+    server_name         example.com;
+    ssl_certificate     cert.pem;
+    ssl_certificate_key private.key;
+
+    location /BOT_TOKEN {
+        proxy_pass http://127.0.0.1:5000;
+    }
+}
+This example uses reverse proxy approach. It can be helpful, when you need to host several bots on the same server.
+```

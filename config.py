@@ -7,8 +7,6 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 class Config:
     HOME_DIR = '/srv/math_bot'
 
-    CERTIFICATE_PATH = os.environ.get('CERTIFICATE_PATH')
-
     URL = os.environ.get('URL')
     NGINX_CONFIG_PATH = os.environ.get('NGINX_CONFIG_PATH')
 
