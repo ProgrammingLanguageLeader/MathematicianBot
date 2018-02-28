@@ -7,7 +7,7 @@ This bot can solve different tasks using computational knowledge engine [Wolfram
 Setup the following environment variables:
 1. MATH_BOT_TOKEN - telegram token of the bot. It can be obtained from [BotFather](https://t.me/botfather).
 2. WOLFRAM_APP_ID - an ID of the Wolfram Alpha application. Visit [WolframAlpha API](https://products.wolframalpha.com/api/) and register your app to get it.
-3. MATH_BOT_DATABASE_URL - path to the database. 
+3. DATABASE_URL - path to the database. 
 4. URL - URL of the hosting server. If you are using long polling method, you may do not specify this.
 
 Setup environment variables on Linux:
@@ -24,7 +24,7 @@ pip install -r requirements.txt
 You can install dependencies without virtual environment, but it's not recommended.
 
 ## Long polling
-Run polling.py to use this method. Virtual environment must be activated.
+Run *__polling.py__* to use this method. Virtual environment must be activated.
 ```bash
 source venv/bin/activate
 python polling.py
@@ -43,5 +43,14 @@ server {
         proxy_pass http://127.0.0.1:5000;
     }
 }
-This example uses reverse proxy approach. It can be helpful, when you need to host several bots on the same server.
 ```
+This example uses reverse proxy approach. It can be helpful, when you need to host several bots on the same server.
+
+## Webhook on Heroku
+Also you can host the bot on [Heroku](https://dashboard.heroku.com/). Sign up on this site, install heroku-cli on your PC and run following commands:
+```bash
+heroku login
+heroku create <your app name>
+git push heroku origin
+```
+Enjoy (:
