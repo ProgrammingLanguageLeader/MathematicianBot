@@ -11,7 +11,7 @@ from config import Config
 
 
 START_MENU, MANUAL_QUERY, INTEGRAL, DERIVATIVE, LIMIT, SUM, \
-    PLOT, SOLVE_EQUATION, TAYLOR_SERIES, EXTREMA, *_ = range(100)
+    PLOT, EQUATION, TAYLOR_SERIES, EXTREMA, *_ = range(100)
 
 
 @write_logs
@@ -46,20 +46,20 @@ def start(bot, update):
 @write_logs
 @send_typing
 def start_menu(bot, update):
-    text = update.message.text
+    text = update.message.text.lower()
     handlers_dict = {
-        'Examples': examples,
-        'Help': help,
-        'Cancel': cancel,
-        'Manual query': handle_manual_query,
-        'Integral': handle_integral,
-        'Derivative': handle_derivative,
-        'Limit': handle_limit,
-        'Sum': handle_sum,
-        'Plot': handle_plot,
-        'Equation': handle_equation,
-        'Extrema': handle_extrema,
-        'Taylor series': handle_taylor_series
+        'examples': examples,
+        'help': help,
+        'cancel': cancel,
+        'manual query': handle_manual_query,
+        'integral': handle_integral,
+        'derivative': handle_derivative,
+        'limit': handle_limit,
+        'sum': handle_sum,
+        'plot': handle_plot,
+        'equation': handle_equation,
+        'extrema': handle_extrema,
+        'taylor series': handle_taylor_series
     }
     handler = handlers_dict[text]
     return handler(bot, update)
@@ -80,49 +80,160 @@ def handle_manual_query(bot, update):
 @write_logs
 @send_typing
 def handle_integral(bot, update):
-    pass
+    chat_id = update.message.chat_id
+    bot.send_message(
+        text='Enter a function to integrate. If you want to calculate '
+             'definite integral, then type "from a to b" (example: '
+             'x^3 from 1 to 2)',
+        chat_id=chat_id,
+        reply_markup=ReplyKeyboardRemove()
+    )
+    return INTEGRAL
+
+
+@write_logs
+@send_typing
+def integral_query(bot, update):
+    update.message.text = 'integrate {}'.format(update.message.text)
+    return wolfram_query(bot, update)
 
 
 @write_logs
 @send_typing
 def handle_derivative(bot, update):
-    pass
+    chat_id = update.message.chat_id
+    bot.send_message(
+        text='Enter a function to calculate derivative',
+        chat_id=chat_id,
+        reply_markup=ReplyKeyboardRemove()
+    )
+    return DERIVATIVE
+
+
+@write_logs
+@send_typing
+def derivative_query(bot, update):
+    update.message.text = 'derivative {}'.format(update.message.text)
+    return wolfram_query(bot, update)
 
 
 @write_logs
 @send_typing
 def handle_limit(bot, update):
-    pass
+    chat_id = update.message.chat_id
+    bot.send_message(
+        text='Enter a function/sequence to calculate limit with '
+             'the number to which argument/number approaches '
+             '(example: (1 + 1/x)^x x -> infinity)',
+        chat_id=chat_id,
+        reply_markup=ReplyKeyboardRemove()
+    )
+    return LIMIT
+
+
+@write_logs
+@send_typing
+def limit_query(bot, update):
+    update.message.text = 'limit {}'.format(update.message.text)
+    return wolfram_query(bot, update)
 
 
 @write_logs
 @send_typing
 def handle_sum(bot, update):
-    pass
+    chat_id = update.message.chat_id
+    bot.send_message(
+        text='Enter a sequence to calculate sum. By default n = 0 '
+             'to infinity, but you can setup other values '
+             '(example: 1 / n^2, n = 1 to infinity)',
+        chat_id=chat_id,
+        reply_markup=ReplyKeyboardRemove()
+    )
+    return SUM
+
+
+@write_logs
+@send_typing
+def sum_query(bot, update):
+    update.message.text = 'sum {}'.format(update.message.text)
+    return wolfram_query(bot, update)
 
 
 @write_logs
 @send_typing
 def handle_plot(bot, update):
-    pass
+    chat_id = update.message.chat_id
+    bot.send_message(
+        text='Enter a function to plot. You can set borders '
+             '(example: 1/x from 10 to 100)',
+        chat_id=chat_id,
+        reply_markup=ReplyKeyboardRemove()
+    )
+    return PLOT
+
+
+@write_logs
+@send_typing
+def plot_query(bot, update):
+    update.message.text = 'plot {}'.format(update.message.text)
+    return wolfram_query(bot, update)
 
 
 @write_logs
 @send_typing
 def handle_equation(bot, update):
-    pass
+    chat_id = update.message.chat_id
+    bot.send_message(
+        text='Enter an equation to solve '
+             '(example: x^3 - 4x^2 + 6x - 24 = 0)',
+        chat_id=chat_id,
+        reply_markup=ReplyKeyboardRemove()
+    )
+    return EQUATION
+
+
+@write_logs
+@send_typing
+def equation_query(bot, update):
+    return wolfram_query(bot, update)
 
 
 @write_logs
 @send_typing
 def handle_extrema(bot, update):
-    pass
+    chat_id = update.message.chat_id
+    bot.send_message(
+        text='Enter a function to find extrema',
+        chat_id=chat_id,
+        reply_markup=ReplyKeyboardRemove()
+    )
+    return EXTREMA
+
+
+@write_logs
+@send_typing
+def extrema_query(bot, update):
+    update.message.text = 'extrema {}'.format(update.message.text)
+    return wolfram_query(bot, update)
 
 
 @write_logs
 @send_typing
 def handle_taylor_series(bot, update):
-    pass
+    chat_id = update.message.chat_id
+    bot.send_message(
+        text='Enter a function to get taylor series',
+        chat_id=chat_id,
+        reply_markup=ReplyKeyboardRemove()
+    )
+    return TAYLOR_SERIES
+
+
+@write_logs
+@send_typing
+def taylor_series_query(bot, update):
+    update.message.text = 'taylor series {}'.format(update.message.text)
+    return wolfram_query(bot, update)
 
 
 @write_logs
@@ -231,7 +342,8 @@ def wolfram_query(bot, update):
 def cancel(bot, update):
     bot.send_message(
         chat_id=update.message.chat_id,
-        text='Conversation was canceled. To start a new one use /start'
+        text='Conversation was canceled. To start a new one use /start',
+        reply_markup=ReplyKeyboardRemove()
     )
     return ConversationHandler.END
 
@@ -253,28 +365,28 @@ def init_updater():
                 MessageHandler(Filters.text, wolfram_query)
             ],
             INTEGRAL: [
-
+                MessageHandler(Filters.text, integral_query)
             ],
             DERIVATIVE: [
-
+                MessageHandler(Filters.text, derivative_query)
             ],
             LIMIT: [
-
+                MessageHandler(Filters.text, limit_query)
             ],
             SUM: [
-
+                MessageHandler(Filters.text, sum_query)
             ],
             PLOT: [
-
+                MessageHandler(Filters.text, plot_query)
             ],
-            SOLVE_EQUATION: [
-
+            EQUATION: [
+                MessageHandler(Filters.text, equation_query)
             ],
             TAYLOR_SERIES: [
-
+                MessageHandler(Filters.text, taylor_series_query)
             ],
             EXTREMA: [
-
+                MessageHandler(Filters.text, extrema_query)
             ]
         },
         fallbacks=[
