@@ -61,8 +61,10 @@ def handle_start_menu(bot, update):
         'extrema': handle_extrema,
         'taylor series': handle_taylor_series
     }
-    handler = handlers_dict[text]
-    return handler(bot, update)
+    if text in handlers_dict:
+        handler = handlers_dict[text]
+        return handler(bot, update)
+    return handle_other_messages(bot, update)
 
 
 @write_logs
@@ -354,7 +356,8 @@ def handle_other_messages(bot, update):
     bot.send_message(
         chat_id=update.message.chat_id,
         text='Hello! Do you want to start working with me? If you do '
-             'enter /start'
+             'enter /start',
+        reply_markup=ReplyKeyboardRemove()
     )
     return ConversationHandler.END
 
