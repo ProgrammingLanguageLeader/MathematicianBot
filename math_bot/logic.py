@@ -6,7 +6,7 @@ from math_bot.app import db
 from math_bot.tools import send_typing, write_logs, remember_new_user
 from math_bot.wolfram import make_wolfram_query
 from math_bot.models import User
-from math_bot.error import error_handler
+from math_bot.error import handle_errors
 from config import Config
 
 
@@ -17,7 +17,7 @@ START_MENU, MANUAL_QUERY, INTEGRAL, DERIVATIVE, LIMIT, SUM, \
 @write_logs
 @send_typing
 @remember_new_user(simple_mode=True)
-def start(bot, update):
+def handle_start(bot, update):
     chat_id = update.message.chat_id
     buttons = [
         KeyboardButton('Integral'),
@@ -45,12 +45,12 @@ def start(bot, update):
 
 @write_logs
 @send_typing
-def start_menu(bot, update):
+def handle_start_menu(bot, update):
     text = update.message.text.lower()
     handlers_dict = {
-        'examples': examples,
-        'help': help,
-        'cancel': cancel,
+        'examples': handle_examples,
+        'help': handle_help,
+        'cancel': handle_cancel,
         'manual query': handle_manual_query,
         'integral': handle_integral,
         'derivative': handle_derivative,
@@ -93,9 +93,9 @@ def handle_integral(bot, update):
 
 @write_logs
 @send_typing
-def integral_query(bot, update):
+def handle_integral_query(bot, update):
     update.message.text = 'integrate {}'.format(update.message.text)
-    return wolfram_query(bot, update)
+    return handle_wolfram_query(bot, update)
 
 
 @write_logs
@@ -112,9 +112,9 @@ def handle_derivative(bot, update):
 
 @write_logs
 @send_typing
-def derivative_query(bot, update):
+def handle_derivative_query(bot, update):
     update.message.text = 'derivative {}'.format(update.message.text)
-    return wolfram_query(bot, update)
+    return handle_wolfram_query(bot, update)
 
 
 @write_logs
@@ -133,9 +133,9 @@ def handle_limit(bot, update):
 
 @write_logs
 @send_typing
-def limit_query(bot, update):
+def handle_limit_query(bot, update):
     update.message.text = 'limit {}'.format(update.message.text)
-    return wolfram_query(bot, update)
+    return handle_wolfram_query(bot, update)
 
 
 @write_logs
@@ -154,9 +154,9 @@ def handle_sum(bot, update):
 
 @write_logs
 @send_typing
-def sum_query(bot, update):
+def handle_sum_query(bot, update):
     update.message.text = 'sum {}'.format(update.message.text)
-    return wolfram_query(bot, update)
+    return handle_wolfram_query(bot, update)
 
 
 @write_logs
@@ -174,9 +174,9 @@ def handle_plot(bot, update):
 
 @write_logs
 @send_typing
-def plot_query(bot, update):
+def handle_plot_query(bot, update):
     update.message.text = 'plot {}'.format(update.message.text)
-    return wolfram_query(bot, update)
+    return handle_wolfram_query(bot, update)
 
 
 @write_logs
@@ -194,8 +194,8 @@ def handle_equation(bot, update):
 
 @write_logs
 @send_typing
-def equation_query(bot, update):
-    return wolfram_query(bot, update)
+def handle_equation_query(bot, update):
+    return handle_wolfram_query(bot, update)
 
 
 @write_logs
@@ -212,9 +212,9 @@ def handle_extrema(bot, update):
 
 @write_logs
 @send_typing
-def extrema_query(bot, update):
+def handle_extrema_query(bot, update):
     update.message.text = 'extrema {}'.format(update.message.text)
-    return wolfram_query(bot, update)
+    return handle_wolfram_query(bot, update)
 
 
 @write_logs
@@ -231,15 +231,15 @@ def handle_taylor_series(bot, update):
 
 @write_logs
 @send_typing
-def taylor_series_query(bot, update):
+def handle_taylor_series_query(bot, update):
     update.message.text = 'taylor series {}'.format(update.message.text)
-    return wolfram_query(bot, update)
+    return handle_wolfram_query(bot, update)
 
 
 @write_logs
 @send_typing
 @remember_new_user(simple_mode=True)
-def help(bot, update):
+def handle_help(bot, update):
     chat_id = update.message.chat_id
     bot.send_message(
         chat_id=chat_id,
@@ -252,13 +252,13 @@ def help(bot, update):
              '/detailed_mode enables you to switch between them. '
              'Simple mode is using by default'
     )
-    return start(bot, update)
+    return handle_start(bot, update)
 
 
 @write_logs
 @send_typing
 @remember_new_user(simple_mode=True)
-def examples(bot, update):
+def handle_examples(bot, update):
     chat_id = update.message.chat_id
     bot.send_message(
         chat_id=chat_id,
@@ -276,12 +276,12 @@ def examples(bot, update):
         parse_mode='Markdown',
         disable_web_page_preview=True
     )
-    return start(bot, update)
+    return handle_start(bot, update)
 
 
 @write_logs
 @send_typing
-def detailed_mode(bot, update):
+def handle_detailed_mode(bot, update):
     db.session.query(User).filter_by(
         telegram_id=update.message.from_user.id
     ).update(dict(simple_mode=False))
@@ -294,7 +294,7 @@ def detailed_mode(bot, update):
 
 @write_logs
 @send_typing
-def simple_mode(bot, update):
+def handle_simple_mode(bot, update):
     db.session.query(User).filter_by(
         telegram_id=update.message.from_user.id
     ).update(dict(simple_mode=True))
@@ -307,7 +307,7 @@ def simple_mode(bot, update):
 
 @write_logs
 @send_typing
-def wolfram_query(bot, update):
+def handle_wolfram_query(bot, update):
     current_user = db.session.query(User).filter_by(
         telegram_id=update.message.from_user.id
     ).all()[0]
@@ -334,12 +334,12 @@ def wolfram_query(bot, update):
                     document=image_src,
                     timeout=15
                 )
-    return start(bot, update)
+    return handle_start(bot, update)
 
 
 @write_logs
 @send_typing
-def cancel(bot, update):
+def handle_cancel(bot, update):
     bot.send_message(
         chat_id=update.message.chat_id,
         text='Conversation was canceled. To start a new one use /start',
@@ -350,7 +350,7 @@ def cancel(bot, update):
 
 @write_logs
 @send_typing
-def default_answer(bot, update):
+def handle_other_messages(bot, update):
     bot.send_message(
         chat_id=update.message.chat_id,
         text='Hello! Do you want to start working with me? If you do '
@@ -370,53 +370,54 @@ def init_updater():
     dispatcher = updater.dispatcher
     conversation_handler = ConversationHandler(
         entry_points=[
-            CommandHandler('start', start),
-            CommandHandler('help', help),
-            CommandHandler('examples', examples),
-            MessageHandler(Filters.all, default_answer)
+            CommandHandler('start', handle_start),
+            CommandHandler('help', handle_help),
+            CommandHandler('examples', handle_examples),
+            MessageHandler(Filters.all, handle_other_messages)
         ],
         states={
             START_MENU: [
-                MessageHandler(Filters.text, start_menu)
+                MessageHandler(Filters.text, handle_start_menu),
+                MessageHandler(Filters.all, handle_other_messages)
             ],
             MANUAL_QUERY: [
-                MessageHandler(Filters.text, wolfram_query)
+                MessageHandler(Filters.text, handle_wolfram_query)
             ],
             INTEGRAL: [
-                MessageHandler(Filters.text, integral_query)
+                MessageHandler(Filters.text, handle_integral_query)
             ],
             DERIVATIVE: [
-                MessageHandler(Filters.text, derivative_query)
+                MessageHandler(Filters.text, handle_derivative_query)
             ],
             LIMIT: [
-                MessageHandler(Filters.text, limit_query)
+                MessageHandler(Filters.text, handle_limit_query)
             ],
             SUM: [
-                MessageHandler(Filters.text, sum_query)
+                MessageHandler(Filters.text, handle_sum_query)
             ],
             PLOT: [
-                MessageHandler(Filters.text, plot_query)
+                MessageHandler(Filters.text, handle_plot_query)
             ],
             EQUATION: [
-                MessageHandler(Filters.text, equation_query)
+                MessageHandler(Filters.text, handle_equation_query)
             ],
             TAYLOR_SERIES: [
-                MessageHandler(Filters.text, taylor_series_query)
+                MessageHandler(Filters.text, handle_taylor_series_query)
             ],
             EXTREMA: [
-                MessageHandler(Filters.text, extrema_query)
+                MessageHandler(Filters.text, handle_extrema_query)
             ]
         },
         fallbacks=[
-            CommandHandler('cancel', cancel)
+            CommandHandler('cancel', handle_cancel)
         ]
     )
     dispatcher.add_handler(
-        CommandHandler('simple_mode', simple_mode)
+        CommandHandler('simple_mode', handle_simple_mode)
     )
     dispatcher.add_handler(
-        CommandHandler('detailed_mode', detailed_mode)
+        CommandHandler('detailed_mode', handle_detailed_mode)
     )
     dispatcher.add_handler(conversation_handler)
-    dispatcher.add_error_handler(error_handler)
+    dispatcher.add_error_handler(handle_errors)
     return updater

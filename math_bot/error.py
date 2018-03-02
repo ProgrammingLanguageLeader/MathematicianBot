@@ -4,7 +4,7 @@ from time import sleep
 import logging
 
 
-def error_handler(bot, update, error):
+def handle_errors(bot, update, error):
     try:
         raise error
     except NetworkError:
