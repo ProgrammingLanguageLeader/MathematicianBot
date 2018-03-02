@@ -348,6 +348,17 @@ def cancel(bot, update):
     return ConversationHandler.END
 
 
+@write_logs
+@send_typing
+def default_answer(bot, update):
+    bot.send_message(
+        chat_id=update.message.chat_id,
+        text='Hello! Do you want to start working with me? If you do '
+             'enter /start'
+    )
+    return ConversationHandler.END
+
+
 def init_updater():
     updater = Updater(
         Config.TELEGRAM_TOKEN,
@@ -361,7 +372,8 @@ def init_updater():
         entry_points=[
             CommandHandler('start', start),
             CommandHandler('help', help),
-            CommandHandler('examples', examples)
+            CommandHandler('examples', examples),
+            MessageHandler(Filters.all, default_answer)
         ],
         states={
             START_MENU: [
