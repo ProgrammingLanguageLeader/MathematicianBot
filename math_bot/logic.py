@@ -320,7 +320,7 @@ def wolfram_query(bot, update):
             text='Unsuccessful. Check your request and try again'
         )
         return
-    for pod in (answer.pods[:2] if current_user.simple_mode else answer.pods):
+    for pod in (answer.pods[:3] if current_user.simple_mode else answer.pods):
         title = pod.title
         bot.send_message(chat_id=chat_id, text=title)
         for sub in pod.subpods:
@@ -349,7 +349,13 @@ def cancel(bot, update):
 
 
 def init_updater():
-    updater = Updater(Config.TELEGRAM_TOKEN)
+    updater = Updater(
+        Config.TELEGRAM_TOKEN,
+        request_kwargs={
+            'read_timeout': 15,
+            'connect_timeout': 15
+        }
+    )
     dispatcher = updater.dispatcher
     conversation_handler = ConversationHandler(
         entry_points=[
