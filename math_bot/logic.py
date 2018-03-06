@@ -1,12 +1,12 @@
 from telegram import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, \
     ConversationHandler
+import logging
 
 from math_bot.app import db
 from math_bot.tools import send_typing, write_logs, remember_new_user
 from math_bot.wolfram import make_wolfram_query
 from math_bot.models import User
-from math_bot.error import handle_errors
 from config import Config
 
 
@@ -360,6 +360,10 @@ def handle_other_messages(bot, update):
         reply_markup=ReplyKeyboardRemove()
     )
     return ConversationHandler.END
+
+
+def handle_errors(bot, update, error):
+    logging.warning('Update {} caused {} error'.format(update, error))
 
 
 def init_updater():
