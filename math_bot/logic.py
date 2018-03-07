@@ -329,12 +329,12 @@ def handle_wolfram_query(bot, update):
             text = sub.plaintext
             if text:
                 bot.send_message(chat_id=chat_id, text=text)
-            image_src = sub.img.src
+            image_src = '[Image]({})'.format(sub.img.src)
             if image_src:
-                bot.send_document(
+                bot.send_message(
                     chat_id=chat_id,
-                    document=image_src,
-                    timeout=15
+                    text=image_src,
+                    parse_mode='Markdown'
                 )
     return handle_start(bot, update)
 
@@ -364,6 +364,16 @@ def handle_other_messages(bot, update):
 
 def handle_errors(bot, update, error):
     logging.warning('Update {} caused {} error'.format(update, error))
+    try:
+        raise error
+    except TimeoutError:
+        bot.send_message(
+            chat_id=update.message.chat_id,
+            text='Connection problems... Please, try again'
+        )
+        handle_start(bot, update)
+    except Exception:
+        pass
 
 
 def init_updater():
