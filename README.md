@@ -23,6 +23,17 @@ pip install -r requirements.txt
 ```
 You can install dependencies without virtual environment, but it's not recommended.
 
+Run the following commands to migrate database
+```bash
+python manage.py db upgrade
+python manage.py db migrate
+```
+If you use Heroku, it can be done by Heroku CLI
+```bash
+heroku run upgrade
+heroku run migrate
+```
+
 ## Long polling
 Run *__polling.py__* to use this method. Virtual environment must be activated.
 ```bash
