@@ -307,7 +307,6 @@ def handle_simple_mode(bot, update):
     )
 
 
-@write_logs
 @send_typing
 def handle_wolfram_query(bot, update):
     current_user = db.session.query(User).filter_by(
@@ -417,7 +416,8 @@ def init_updater():
         },
         fallbacks=[
             CommandHandler('cancel', handle_cancel)
-        ]
+        ],
+        allow_reentry=True
     )
     dispatcher.add_handler(
         CommandHandler('simple_mode', handle_simple_mode)
