@@ -378,8 +378,6 @@ def init_updater():
     conversation_handler = ConversationHandler(
         entry_points=[
             CommandHandler('start', handle_start),
-            CommandHandler('help', handle_help),
-            CommandHandler('examples', handle_examples),
             MessageHandler(Filters.all, handle_other_messages)
         ],
         states={
@@ -418,6 +416,12 @@ def init_updater():
         fallbacks=[
             CommandHandler('cancel', handle_cancel)
         ]
+    )
+    dispatcher.add_handler(
+        CommandHandler('help', handle_help)
+    )
+    dispatcher.add_handler(
+        CommandHandler('examples', handle_examples)
     )
     dispatcher.add_handler(
         CommandHandler('simple_mode', handle_simple_mode)
