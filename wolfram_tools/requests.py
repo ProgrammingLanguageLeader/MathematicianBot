@@ -1,8 +1,20 @@
-import requests
-from xmltodict import parse
 from collections import OrderedDict
 
-from config import Config
+import requests
+
+from xmltodict import parse
+
+
+def make_wolfram_request(query, app_id):
+    params = {
+        'input': query,
+        'appid': app_id
+    }
+    answer = requests.get(
+        url='http://api.wolframalpha.com/v2/query',
+        params=params
+    )
+    return WolframResult(parse(answer.content))
 
 
 class WolframResult(OrderedDict):
@@ -43,15 +55,3 @@ class WolframImage(OrderedDict):
     def __init__(self, parsed_img: OrderedDict):
         super().__init__(parsed_img)
         self.src = parsed_img['@src']
-
-
-def make_wolfram_query(query):
-    params = {
-        'input': query,
-        'appid': Config.WOLFRAM_APP_ID
-    }
-    answer = requests.get(
-        url='http://api.wolframalpha.com/v2/query',
-        params=params
-    )
-    return WolframResult(parse(answer.content))
