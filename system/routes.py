@@ -1,9 +1,9 @@
-from flask import Blueprint, current_app
+from flask import Blueprint
 
 
-routes_blueprint = Blueprint('system_routes', __name__)
+system_blueprint = Blueprint('system_routes', __name__)
 
 
-@routes_blueprint.route('/')
+@system_blueprint.route('/')
 def index():
     return 'It works'
