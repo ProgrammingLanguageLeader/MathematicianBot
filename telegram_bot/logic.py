@@ -1,17 +1,16 @@
-from telegram import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, \
-    ConversationHandler
 import logging
 
-from math_bot.app import db
-from math_bot.tools import send_typing, write_logs, remember_new_user
-from math_bot.wolfram import make_wolfram_query
-from math_bot.models import User
-from config import Config
+from telegram import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
+from telegram.ext import ConversationHandler
 
+from system.config import WOLFRAM_APP_ID
+from system.db import db
 
-START_MENU, MANUAL_QUERY, INTEGRAL, DERIVATIVE, LIMIT, SUM, \
-    PLOT, EQUATION, TAYLOR_SERIES, EXTREMA, *_ = range(100)
+from telegram_bot.tools import send_typing, write_logs, remember_new_user
+from telegram_bot.models import User
+from telegram_bot.menu import MenuEntry
+
+from wolfram_tools.requests import make_wolfram_request
 
 
 @write_logs
@@ -40,7 +39,7 @@ def handle_start(bot, update):
         text='Choose one of the following options',
         reply_markup=reply_markup
     )
-    return START_MENU
+    return MenuEntry.START_MENU.value
 
 
 @write_logs
@@ -76,7 +75,7 @@ def handle_manual_query(bot, update):
         chat_id=chat_id,
         reply_markup=ReplyKeyboardRemove()
     )
-    return MANUAL_QUERY
+    return MenuEntry.MANUAL_QUERY.value
 
 
 @write_logs
@@ -90,14 +89,14 @@ def handle_integral(bot, update):
         chat_id=chat_id,
         reply_markup=ReplyKeyboardRemove()
     )
-    return INTEGRAL
+    return MenuEntry.INTEGRAL.value
 
 
 @write_logs
 @send_typing
 def handle_integral_query(bot, update):
     update.message.text = 'integrate {}'.format(update.message.text)
-    return handle_wolfram_query(bot, update)
+    return handle_wolfram_request(bot, update)
 
 
 @write_logs
@@ -109,14 +108,14 @@ def handle_derivative(bot, update):
         chat_id=chat_id,
         reply_markup=ReplyKeyboardRemove()
     )
-    return DERIVATIVE
+    return MenuEntry.DERIVATIVE.value
 
 
 @write_logs
 @send_typing
 def handle_derivative_query(bot, update):
     update.message.text = 'derivative {}'.format(update.message.text)
-    return handle_wolfram_query(bot, update)
+    return handle_wolfram_request(bot, update)
 
 
 @write_logs
@@ -130,14 +129,14 @@ def handle_limit(bot, update):
         chat_id=chat_id,
         reply_markup=ReplyKeyboardRemove()
     )
-    return LIMIT
+    return MenuEntry.LIMIT.value
 
 
 @write_logs
 @send_typing
 def handle_limit_query(bot, update):
     update.message.text = 'limit {}'.format(update.message.text)
-    return handle_wolfram_query(bot, update)
+    return handle_wolfram_request(bot, update)
 
 
 @write_logs
@@ -151,14 +150,14 @@ def handle_sum(bot, update):
         chat_id=chat_id,
         reply_markup=ReplyKeyboardRemove()
     )
-    return SUM
+    return MenuEntry.SUM.value
 
 
 @write_logs
 @send_typing
 def handle_sum_query(bot, update):
     update.message.text = 'sum {}'.format(update.message.text)
-    return handle_wolfram_query(bot, update)
+    return handle_wolfram_request(bot, update)
 
 
 @write_logs
@@ -171,14 +170,14 @@ def handle_plot(bot, update):
         chat_id=chat_id,
         reply_markup=ReplyKeyboardRemove()
     )
-    return PLOT
+    return MenuEntry.PLOT.value
 
 
 @write_logs
 @send_typing
 def handle_plot_query(bot, update):
     update.message.text = 'plot {}'.format(update.message.text)
-    return handle_wolfram_query(bot, update)
+    return handle_wolfram_request(bot, update)
 
 
 @write_logs
@@ -191,13 +190,13 @@ def handle_equation(bot, update):
         chat_id=chat_id,
         reply_markup=ReplyKeyboardRemove()
     )
-    return EQUATION
+    return MenuEntry.EQUATION.value
 
 
 @write_logs
 @send_typing
 def handle_equation_query(bot, update):
-    return handle_wolfram_query(bot, update)
+    return handle_wolfram_request(bot, update)
 
 
 @write_logs
@@ -209,14 +208,14 @@ def handle_extrema(bot, update):
         chat_id=chat_id,
         reply_markup=ReplyKeyboardRemove()
     )
-    return EXTREMA
+    return MenuEntry.EXTREMA.value
 
 
 @write_logs
 @send_typing
 def handle_extrema_query(bot, update):
     update.message.text = 'extrema {}'.format(update.message.text)
-    return handle_wolfram_query(bot, update)
+    return handle_wolfram_request(bot, update)
 
 
 @write_logs
@@ -228,14 +227,14 @@ def handle_taylor_series(bot, update):
         chat_id=chat_id,
         reply_markup=ReplyKeyboardRemove()
     )
-    return TAYLOR_SERIES
+    return MenuEntry.TAYLOR_SERIES.value
 
 
 @write_logs
 @send_typing
 def handle_taylor_series_query(bot, update):
     update.message.text = 'taylor series {}'.format(update.message.text)
-    return handle_wolfram_query(bot, update)
+    return handle_wolfram_request(bot, update)
 
 
 @write_logs
@@ -309,13 +308,13 @@ def handle_simple_mode(bot, update):
 
 @write_logs
 @send_typing
-def handle_wolfram_query(bot, update):
+def handle_wolfram_request(bot, update):
     current_user = db.session.query(User).filter_by(
         telegram_id=update.message.from_user.id
     ).all()[0]
     chat_id = update.message.chat_id
     text = update.message.text
-    answer = make_wolfram_query(text)
+    answer = make_wolfram_request(text, WOLFRAM_APP_ID)
     if answer.error or not answer.success:
         bot.send_message(
             chat_id=chat_id,
@@ -374,71 +373,3 @@ def handle_errors(bot, update, error):
         handle_start(bot, update)
     except Exception:
         pass
-
-
-def init_updater():
-    updater = Updater(
-        Config.TELEGRAM_TOKEN,
-        request_kwargs={
-            'read_timeout': 15,
-            'connect_timeout': 15
-        }
-    )
-    dispatcher = updater.dispatcher
-    conversation_handler = ConversationHandler(
-        entry_points=[
-            CommandHandler('start', handle_start),
-            MessageHandler(Filters.all, handle_other_messages)
-        ],
-        states={
-            START_MENU: [
-                MessageHandler(Filters.text, handle_start_menu),
-                MessageHandler(Filters.all, handle_other_messages)
-            ],
-            MANUAL_QUERY: [
-                MessageHandler(Filters.text, handle_wolfram_query)
-            ],
-            INTEGRAL: [
-                MessageHandler(Filters.text, handle_integral_query)
-            ],
-            DERIVATIVE: [
-                MessageHandler(Filters.text, handle_derivative_query)
-            ],
-            LIMIT: [
-                MessageHandler(Filters.text, handle_limit_query)
-            ],
-            SUM: [
-                MessageHandler(Filters.text, handle_sum_query)
-            ],
-            PLOT: [
-                MessageHandler(Filters.text, handle_plot_query)
-            ],
-            EQUATION: [
-                MessageHandler(Filters.text, handle_equation_query)
-            ],
-            TAYLOR_SERIES: [
-                MessageHandler(Filters.text, handle_taylor_series_query)
-            ],
-            EXTREMA: [
-                MessageHandler(Filters.text, handle_extrema_query)
-            ]
-        },
-        fallbacks=[
-            CommandHandler('cancel', handle_cancel)
-        ]
-    )
-    dispatcher.add_handler(
-        CommandHandler('help', handle_help)
-    )
-    dispatcher.add_handler(
-        CommandHandler('examples', handle_examples)
-    )
-    dispatcher.add_handler(
-        CommandHandler('simple_mode', handle_simple_mode)
-    )
-    dispatcher.add_handler(
-        CommandHandler('detailed_mode', handle_detailed_mode)
-    )
-    dispatcher.add_handler(conversation_handler)
-    dispatcher.add_error_handler(handle_errors)
-    return updater

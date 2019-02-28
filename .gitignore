@@ -1,5 +1,6 @@
 __pycache__/
 .idea/
+.vscode/
 venv/
-app.db
-environ.sh
+db.sqlite3
+.env

@@ -1,4 +1,3 @@
-web: python webhook.py
-init: python manage.py db init
-migrate: python manage.py db migrate
-upgrade: python manage.py db upgrade
+web: flask run
+webhook: flask webhook
+upgrade: flask db upgrade
