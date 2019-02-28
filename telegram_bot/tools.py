@@ -1,9 +1,11 @@
 import logging
-from telegram import ChatAction
 from functools import wraps
 
-from math_bot.app import db
-from math_bot.models import User
+from telegram import ChatAction
+
+from system.db import db
+
+from telegram_bot.models import User
 
 
 def send_typing(func):
@@ -25,7 +27,7 @@ def write_logs(func):
         user_username = update.message.from_user.username
         action = update.message.text
         logging.info(
-            'User %s:%s - %s' % (user_id, user_username, action)
+            'User %s: %s - %s' % (user_id, user_username, action)
         )
         return func(bot, update)
     return decorated
