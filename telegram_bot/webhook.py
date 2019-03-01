@@ -9,7 +9,7 @@ def set_webhook():
     telegram_token = current_app.config.get('TELEGRAM_TOKEN')
     bot = TelegramBot(telegram_token)
     bot.set_webhook(
-        webhook_url='https://%s:%s/telegram/%s' % (
+        url='https://%s:%s/telegram/%s' % (
             host_url,
             host_port,
             telegram_token
