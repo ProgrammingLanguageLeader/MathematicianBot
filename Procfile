@@ -1,3 +1,3 @@
 web: gunicorn system.wsgi:app
-webhook: flask webhook
+webhook: flask telegram webhook
 upgrade: flask db upgrade
