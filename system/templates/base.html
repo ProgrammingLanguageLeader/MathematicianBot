@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>
+    {% block title %}
+      Mathematician Bot
+    {% endblock %}
+  </title>
+  {% block stylesheet %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+  {% endblock %}
+</head>
+<body>
+  {% block navbar %}
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container">
+        <a class="navbar-brand" href="{{ url_for('system_routes.index') }}">
+          Mathematician Bot
+        </a>
+
+        <div class="collapse navbar-collapse" id="base-navbar">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('system_routes.index') }}">
+                Web
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="https://t.me/clever_mathematician_bot">
+                Telegram
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link disabled" href="#">
+                VK
+              </a>
+            </li>
+        </div>
+      </div>
+    </nav>
+  {% endblock %}
+  {% block content %}
+  {% endblock %}
+</body>
+</html>
