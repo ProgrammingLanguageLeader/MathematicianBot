@@ -6,6 +6,7 @@ BASE_DIR = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 dotenv.load_dotenv(BASE_DIR)
 
 HOST_URL = os.getenv('HOST_URL')
+HOST_PORT = os.getenv('HOST_PORT') or 443
 
 TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 WOLFRAM_APP_ID = os.getenv('WOLFRAM_APP_ID')
