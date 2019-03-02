@@ -13,13 +13,12 @@ def start_polling():
         level=logging.INFO
     )
     bot = TelegramBot(current_app.config['TELEGRAM_TOKEN'])
+    bot.delete_webhook()
     dispatcher = DispatcherProxy(bot)
     current_offset = 0
     while True:
         updates = bot.get_updates(offset=current_offset)
-        print(current_offset)
         for update in updates:
-            print(updates)
             dispatcher.update_queue.put(update)
             current_offset = update.update_id + 1
         time.sleep(1)

@@ -1,7 +1,6 @@
 import logging
 
 from telegram import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
-from telegram.ext import ConversationHandler
 
 from system.config import WOLFRAM_APP_ID
 from system.db import db
@@ -15,7 +14,7 @@ from wolfram_tools.requests import make_wolfram_request
 
 @write_logs
 @send_typing
-@remember_new_user(simple_mode=True)
+@remember_new_user
 def handle_start(bot, update):
     chat_id = update.message.chat_id
     buttons = [
@@ -30,13 +29,13 @@ def handle_start(bot, update):
         KeyboardButton('Manual query'),
         KeyboardButton('Examples'),
         KeyboardButton('Help'),
-        KeyboardButton('Cancel')
+        KeyboardButton('Toggle mode')
     ]
     keyboard = [buttons[i:i + 3] for i in range(0, len(buttons), 3)]
     reply_markup = ReplyKeyboardMarkup(keyboard)
     bot.send_message(
         chat_id=chat_id,
-        text='Choose one of the following options',
+        text='Choose one of the following options or enter your request',
         reply_markup=reply_markup
     )
     return MenuEntry.START_MENU.value
@@ -44,12 +43,13 @@ def handle_start(bot, update):
 
 @write_logs
 @send_typing
+@remember_new_user
 def handle_start_menu(bot, update):
     text = update.message.text.lower()
     handlers_dict = {
         'examples': handle_examples,
         'help': handle_help,
-        'cancel': handle_cancel,
+        'toggle mode': handle_mode_toggling,
         'manual query': handle_manual_query,
         'integral': handle_integral,
         'derivative': handle_derivative,
@@ -68,6 +68,7 @@ def handle_start_menu(bot, update):
 
 @write_logs
 @send_typing
+@remember_new_user
 def handle_manual_query(bot, update):
     chat_id = update.message.chat_id
     bot.send_message(
@@ -80,6 +81,7 @@ def handle_manual_query(bot, update):
 
 @write_logs
 @send_typing
+@remember_new_user
 def handle_integral(bot, update):
     chat_id = update.message.chat_id
     bot.send_message(
@@ -94,6 +96,7 @@ def handle_integral(bot, update):
 
 @write_logs
 @send_typing
+@remember_new_user
 def handle_integral_query(bot, update):
     update.message.text = 'integrate {}'.format(update.message.text)
     return handle_wolfram_request(bot, update)
@@ -101,6 +104,7 @@ def handle_integral_query(bot, update):
 
 @write_logs
 @send_typing
+@remember_new_user
 def handle_derivative(bot, update):
     chat_id = update.message.chat_id
     bot.send_message(
@@ -113,6 +117,7 @@ def handle_derivative(bot, update):
 
 @write_logs
 @send_typing
+@remember_new_user
 def handle_derivative_query(bot, update):
     update.message.text = 'derivative {}'.format(update.message.text)
     return handle_wolfram_request(bot, update)
@@ -120,6 +125,7 @@ def handle_derivative_query(bot, update):
 
 @write_logs
 @send_typing
+@remember_new_user
 def handle_limit(bot, update):
     chat_id = update.message.chat_id
     bot.send_message(
@@ -134,6 +140,7 @@ def handle_limit(bot, update):
 
 @write_logs
 @send_typing
+@remember_new_user
 def handle_limit_query(bot, update):
     update.message.text = 'limit {}'.format(update.message.text)
     return handle_wolfram_request(bot, update)
@@ -141,6 +148,7 @@ def handle_limit_query(bot, update):
 
 @write_logs
 @send_typing
+@remember_new_user
 def handle_sum(bot, update):
     chat_id = update.message.chat_id
     bot.send_message(
@@ -155,6 +163,7 @@ def handle_sum(bot, update):
 
 @write_logs
 @send_typing
+@remember_new_user
 def handle_sum_query(bot, update):
     update.message.text = 'sum {}'.format(update.message.text)
     return handle_wolfram_request(bot, update)
@@ -162,6 +171,7 @@ def handle_sum_query(bot, update):
 
 @write_logs
 @send_typing
+@remember_new_user
 def handle_plot(bot, update):
     chat_id = update.message.chat_id
     bot.send_message(
@@ -175,6 +185,7 @@ def handle_plot(bot, update):
 
 @write_logs
 @send_typing
+@remember_new_user
 def handle_plot_query(bot, update):
     update.message.text = 'plot {}'.format(update.message.text)
     return handle_wolfram_request(bot, update)
@@ -182,6 +193,7 @@ def handle_plot_query(bot, update):
 
 @write_logs
 @send_typing
+@remember_new_user
 def handle_equation(bot, update):
     chat_id = update.message.chat_id
     bot.send_message(
@@ -195,12 +207,14 @@ def handle_equation(bot, update):
 
 @write_logs
 @send_typing
+@remember_new_user
 def handle_equation_query(bot, update):
     return handle_wolfram_request(bot, update)
 
 
 @write_logs
 @send_typing
+@remember_new_user
 def handle_extrema(bot, update):
     chat_id = update.message.chat_id
     bot.send_message(
@@ -213,6 +227,7 @@ def handle_extrema(bot, update):
 
 @write_logs
 @send_typing
+@remember_new_user
 def handle_extrema_query(bot, update):
     update.message.text = 'extrema {}'.format(update.message.text)
     return handle_wolfram_request(bot, update)
@@ -220,6 +235,7 @@ def handle_extrema_query(bot, update):
 
 @write_logs
 @send_typing
+@remember_new_user
 def handle_taylor_series(bot, update):
     chat_id = update.message.chat_id
     bot.send_message(
@@ -232,6 +248,7 @@ def handle_taylor_series(bot, update):
 
 @write_logs
 @send_typing
+@remember_new_user
 def handle_taylor_series_query(bot, update):
     update.message.text = 'taylor series {}'.format(update.message.text)
     return handle_wolfram_request(bot, update)
@@ -239,7 +256,7 @@ def handle_taylor_series_query(bot, update):
 
 @write_logs
 @send_typing
-@remember_new_user(simple_mode=True)
+@remember_new_user
 def handle_help(bot, update):
     chat_id = update.message.chat_id
     bot.send_message(
@@ -258,7 +275,7 @@ def handle_help(bot, update):
 
 @write_logs
 @send_typing
-@remember_new_user(simple_mode=True)
+@remember_new_user
 def handle_examples(bot, update):
     chat_id = update.message.chat_id
     bot.send_message(
@@ -282,6 +299,7 @@ def handle_examples(bot, update):
 
 @write_logs
 @send_typing
+@remember_new_user
 def handle_detailed_mode(bot, update):
     db.session.query(User).filter_by(
         telegram_id=update.message.from_user.id
@@ -295,6 +313,7 @@ def handle_detailed_mode(bot, update):
 
 @write_logs
 @send_typing
+@remember_new_user
 def handle_simple_mode(bot, update):
     db.session.query(User).filter_by(
         telegram_id=update.message.from_user.id
@@ -308,10 +327,11 @@ def handle_simple_mode(bot, update):
 
 @write_logs
 @send_typing
+@remember_new_user
 def handle_wolfram_request(bot, update):
     current_user = db.session.query(User).filter_by(
         telegram_id=update.message.from_user.id
-    ).all()[0]
+    ).first()
     chat_id = update.message.chat_id
     text = update.message.text
     answer = make_wolfram_request(text, WOLFRAM_APP_ID)
@@ -340,25 +360,21 @@ def handle_wolfram_request(bot, update):
 
 @write_logs
 @send_typing
-def handle_cancel(bot, update):
-    bot.send_message(
-        chat_id=update.message.chat_id,
-        text='Conversation was canceled. To start a new one use /start',
-        reply_markup=ReplyKeyboardRemove()
-    )
-    return ConversationHandler.END
+@remember_new_user
+def handle_mode_toggling(bot, update):
+    current_user = db.session.query(User).filter_by(
+        telegram_id=update.message.from_user.id
+    ).first()
+    if current_user.simple_mode:
+        return handle_detailed_mode(bot, update)
+    return handle_simple_mode(bot, update)
 
 
 @write_logs
 @send_typing
+@remember_new_user
 def handle_other_messages(bot, update):
-    bot.send_message(
-        chat_id=update.message.chat_id,
-        text='Hello! Do you want to start working with me? If you do '
-             'enter /start',
-        reply_markup=ReplyKeyboardRemove()
-    )
-    return ConversationHandler.END
+    return handle_wolfram_request(bot, update)
 
 
 def handle_errors(bot, update, error):
@@ -372,4 +388,8 @@ def handle_errors(bot, update, error):
         )
         handle_start(bot, update)
     except Exception:
-        pass
+        bot.send_message(
+            chat_id=update.message.chat_id,
+            text='Something went wrong... Please, post a new issue '
+                 'on my GitHub repository to fix the problem'
+        )

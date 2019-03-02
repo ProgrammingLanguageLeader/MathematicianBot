@@ -33,21 +33,19 @@ def write_logs(func):
     return decorated
 
 
-def remember_new_user(simple_mode):
-    def arg_decorator(func):
-        @wraps(func)
-        def func_decorator(bot, update):
-            current_user = db.session.query(User).filter_by(
-                telegram_id=update.message.from_user.id
-            ).all()
-            if not current_user:
-                db.session.add(
-                    User(
-                        telegram_id=update.message.from_user.id,
-                        simple_mode=simple_mode
-                    )
+def remember_new_user(func):
+    @wraps(func)
+    def decorated(bot, update):
+        current_user = db.session.query(User).filter_by(
+            telegram_id=update.message.from_user.id
+        ).all()
+        if not current_user:
+            db.session.add(
+                User(
+                    telegram_id=update.message.from_user.id,
+                    simple_mode=True
                 )
-                db.session.commit()
-            return func(bot, update)
-        return func_decorator
-    return arg_decorator
+            )
+            db.session.commit()
+        return func(bot, update)
+    return decorated

@@ -56,11 +56,12 @@ class DispatcherProxy(Dispatcher):
                 ],
                 MenuEntry.EXTREMA.value: [
                     MessageHandler(Filters.text, logic.handle_extrema_query)
+                ],
+                MenuEntry.TOGGLE_MODE.value: [
+                    MessageHandler(Filters.text, logic.handle_mode_toggling)
                 ]
             },
-            fallbacks=[
-                CommandHandler('cancel', logic.handle_cancel)
-            ]
+            fallbacks=[]
         )
         self.add_handler(
             CommandHandler('help', logic.handle_help)
