@@ -22,7 +22,7 @@ class DispatcherProxy(Dispatcher):
         conversation_handler = ConversationHandler(
             entry_points=[
                 CommandHandler('start', logic.handle_start),
-                MessageHandler(Filters.all, logic.handle_other_messages)
+                MessageHandler(Filters.all, logic.handle_start_menu)
             ],
             states={
                 MenuEntry.START_MENU.value: [
@@ -51,15 +51,14 @@ class DispatcherProxy(Dispatcher):
                     MessageHandler(Filters.text, logic.handle_equation_query)
                 ],
                 MenuEntry.TAYLOR_SERIES.value: [
-                    MessageHandler(Filters.text,
-                                   logic.handle_taylor_series_query)
+                    MessageHandler(
+                        Filters.text,
+                        logic.handle_taylor_series_query
+                    )
                 ],
                 MenuEntry.EXTREMA.value: [
                     MessageHandler(Filters.text, logic.handle_extrema_query)
                 ],
-                MenuEntry.TOGGLE_MODE.value: [
-                    MessageHandler(Filters.text, logic.handle_mode_toggling)
-                ]
             },
             fallbacks=[]
         )

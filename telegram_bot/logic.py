@@ -8,6 +8,7 @@ from system.db import db
 from telegram_bot.tools import send_typing, write_logs, remember_new_user
 from telegram_bot.models import User
 from telegram_bot.menu import MenuEntry
+from telegram.error import TimedOut
 
 from wolfram_tools.requests import make_wolfram_request
 
@@ -303,7 +304,9 @@ def handle_examples(bot, update):
 def handle_detailed_mode(bot, update):
     db.session.query(User).filter_by(
         telegram_id=update.message.from_user.id
-    ).update(dict(simple_mode=False))
+    ).update({
+        'simple_mode': False
+    })
     db.session.commit()
     bot.send_message(
         chat_id=update.message.chat_id,
@@ -317,7 +320,9 @@ def handle_detailed_mode(bot, update):
 def handle_simple_mode(bot, update):
     db.session.query(User).filter_by(
         telegram_id=update.message.from_user.id
-    ).update(dict(simple_mode=True))
+    ).update({
+        'simple_mode': True
+    })
     db.session.commit()
     bot.send_message(
         chat_id=update.message.chat_id,
@@ -381,12 +386,8 @@ def handle_errors(bot, update, error):
     logging.warning('Update {} caused {} error'.format(update, error))
     try:
         raise error
-    except TimeoutError:
-        bot.send_message(
-            chat_id=update.message.chat_id,
-            text='Connection problems... Please, try again'
-        )
-        handle_start(bot, update)
+    except TimedOut:
+        pass
     except Exception:
         bot.send_message(
             chat_id=update.message.chat_id,

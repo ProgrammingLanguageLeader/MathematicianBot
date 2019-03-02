@@ -16,7 +16,6 @@ MenuEntry = Enum(
             'EQUATION',
             'TAYLOR_SERIES',
             'EXTREMA',
-            'TOGGLE_MODE'
         ],
         count()
     )
