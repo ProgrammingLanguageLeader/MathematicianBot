@@ -1,13 +1,12 @@
-from flask import current_app, request
+from flask import current_app, request, Blueprint
 
 from telegram.update import Update
 
-from telegram_bot.blueprint import TelegramBlueprint
 from telegram_bot.bot import TelegramBot
 from telegram_bot.dispatcher import DispatcherProxy
 
 
-telegram_blueprint = TelegramBlueprint()
+telegram_blueprint = Blueprint('telegram_blueprint', __name__)
 
 
 @telegram_blueprint.route(
