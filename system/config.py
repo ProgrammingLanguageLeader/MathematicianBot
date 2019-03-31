@@ -5,6 +5,9 @@ import dotenv
 BASE_DIR = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 dotenv.load_dotenv(BASE_DIR)
 
+DIST_DIR = os.path.join(BASE_DIR, 'web_site/frontend/dist')
+STATIC_DIR = os.path.join(DIST_DIR, 'static')
+
 HOST_URL = os.getenv('HOST_URL')
 HOST_PORT = os.getenv('HOST_PORT') or 443
 

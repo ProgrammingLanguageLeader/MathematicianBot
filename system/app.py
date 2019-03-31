@@ -6,7 +6,7 @@ from system.commands import register_commands
 
 
 def create_app():
-    app = Flask(__name__)
+    app = Flask(__name__, static_folder=None)
     app.url_map.strict_slashes = False
     app.config.from_object('system.config')
 
