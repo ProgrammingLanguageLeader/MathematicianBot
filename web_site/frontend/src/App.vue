@@ -1,10 +1,12 @@
 <template>
 <div id="app">
-  <b-navbar type="dark" variant="info">
+  <b-navbar type="dark" variant="info" toggleable="sm">
     <b-container>
       <b-navbar-brand href="#">
         Mathematician Bot
       </b-navbar-brand>
+
+      <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav>
