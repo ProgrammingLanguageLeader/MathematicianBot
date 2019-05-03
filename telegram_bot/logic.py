@@ -10,7 +10,7 @@ from telegram_bot.models import User
 from telegram_bot.menu import MenuEntry
 from telegram.error import TimedOut
 
-from wolfram_tools.requests import make_wolfram_request
+from wolfram.requests import make_wolfram_request
 
 
 @write_logs
