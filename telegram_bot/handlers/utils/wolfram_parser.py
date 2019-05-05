@@ -1,13 +1,13 @@
-from typing import List
+from typing import List, Optional
 
 from wolfram.api import WolframResult
 
 
 def parse_wolfram_answer(
-        answer: WolframResult,
+        answer: Optional[WolframResult],
         simple_mode: bool = False
 ) -> List[str]:
-    if answer.error or not answer.success:
+    if not answer or answer.error or not answer.success:
         return ['Unsuccessful. Check your request and try again']
     simple_mode_pods_number = 3
     answer_pods = answer.pods[:simple_mode_pods_number] if simple_mode \

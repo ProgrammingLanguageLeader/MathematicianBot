@@ -8,7 +8,7 @@ from telegram_bot.handlers.utils.menu_entries import MenuEntry
 @write_logs
 @send_typing
 @remember_new_user
-def handle_sum(bot, update):
+def handle_sum(bot, update) -> int:
     chat_id = update.message.chat_id
     bot.send_message(
         text='Enter a sequence to calculate sum. By default n = 0 '
