@@ -1,6 +1,6 @@
 import os
-import dotenv
 
+import dotenv
 
 BASE_DIR = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 dotenv.load_dotenv(BASE_DIR)

@@ -1,9 +1,8 @@
 from flask import current_app, request, Blueprint
-
+from telegram import Bot
 from telegram.update import Update
 
-from telegram_bot.bot import TelegramBot
-from telegram_bot.dispatcher import DispatcherProxy
+from telegram_bot.dispatcher import create_dispatcher
 
 
 telegram_blueprint = Blueprint('telegram_blueprint', __name__)
@@ -14,8 +13,8 @@ telegram_blueprint = Blueprint('telegram_blueprint', __name__)
     methods=['POST']
 )
 def webhook():
-    bot = TelegramBot(current_app.config['TELEGRAM_TOKEN'])
-    dispatcher = DispatcherProxy(bot)
+    bot = Bot(current_app.config['TELEGRAM_TOKEN'])
+    dispatcher = create_dispatcher(bot)
     update = Update.de_json(request.get_json(force=True), bot=bot)
     dispatcher.update_queue.put(update)
     return 'OK'

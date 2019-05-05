@@ -1,20 +1,20 @@
 from collections import OrderedDict
 
 import requests
+import xmltodict
 
-from xmltodict import parse
 
-
-def make_wolfram_request(query, app_id):
+def make_wolfram_request(request, app_id, timeout=2.5):
     params = {
-        'input': query,
+        'input': request,
         'appid': app_id
     }
     answer = requests.get(
         url='http://api.wolframalpha.com/v2/query',
-        params=params
+        params=params,
+        timeout=timeout
     )
-    return WolframResult(parse(answer.content))
+    return WolframResult(xmltodict.parse(answer.content))
 
 
 class WolframResult(OrderedDict):

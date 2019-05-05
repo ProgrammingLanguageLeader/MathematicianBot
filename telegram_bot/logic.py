@@ -1,16 +1,21 @@
+import asyncio
 import logging
 
 from telegram import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
+from telegram.error import TimedOut, TelegramError
+from telegram.ext import run_async
 
 from system.config import WOLFRAM_APP_ID
 from system.db import db
-
-from telegram_bot.tools import send_typing, write_logs, remember_new_user
-from telegram_bot.models import User
 from telegram_bot.menu import MenuEntry
-from telegram.error import TimedOut
+from telegram_bot.models import User
+from telegram_bot.tools import send_typing, write_logs, remember_new_user
+from wolfram.api import make_wolfram_request
 
-from wolfram.requests import make_wolfram_request
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+event_loop = asyncio.new_event_loop()
+asyncio.set_event_loop(event_loop)
 
 
 @write_logs
@@ -330,6 +335,7 @@ def handle_simple_mode(bot, update):
     )
 
 
+@run_async
 @write_logs
 @send_typing
 @remember_new_user
@@ -345,7 +351,7 @@ def handle_wolfram_request(bot, update):
             chat_id=chat_id,
             text='Unsuccessful. Check your request and try again'
         )
-        return
+        return MenuEntry.START_MENU.value
     for pod in (answer.pods[:3] if current_user.simple_mode else answer.pods):
         title = pod.title
         bot.send_message(chat_id=chat_id, text=title)
@@ -360,7 +366,7 @@ def handle_wolfram_request(bot, update):
                     text=image_src,
                     parse_mode='Markdown'
                 )
-    return handle_start(bot, update)
+    return MenuEntry.START_MENU.value
 
 
 @write_logs
@@ -383,12 +389,12 @@ def handle_other_messages(bot, update):
 
 
 def handle_errors(bot, update, error):
-    logging.warning('Update {} caused {} error'.format(update, error))
+    logger.warning('Update {} caused {} error'.format(update, error))
     try:
         raise error
     except TimedOut:
         pass
-    except Exception:
+    except TelegramError:
         bot.send_message(
             chat_id=update.message.chat_id,
             text='Something went wrong... Please, post a new issue '

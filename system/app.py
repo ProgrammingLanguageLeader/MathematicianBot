@@ -1,8 +1,8 @@
 from flask import Flask
 
-from system.db import db, migrate
 from system.blueprints import register_blueprints
 from system.commands import register_commands
+from system.db import db, migrate
 
 
 def create_app():

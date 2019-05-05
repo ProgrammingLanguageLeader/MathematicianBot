@@ -23,10 +23,11 @@ def send_typing(func):
 def write_logs(func):
     @wraps(func)
     def decorated(bot, update):
+        logger = logging.getLogger(__name__)
         user_id = update.message.from_user.id
         user_username = update.message.from_user.username
         action = update.message.text
-        logging.info(
+        logger.info(
             'User %s: %s - %s' % (user_id, user_username, action)
         )
         return func(bot, update)
