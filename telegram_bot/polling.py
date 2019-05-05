@@ -10,7 +10,7 @@ from telegram_bot.dispatcher import create_dispatcher
 def start_polling():
     logging.basicConfig(
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-        level=logging.DEBUG
+        level=logging.INFO
     )
     bot = Bot(current_app.config['TELEGRAM_TOKEN'])
     bot.delete_webhook()

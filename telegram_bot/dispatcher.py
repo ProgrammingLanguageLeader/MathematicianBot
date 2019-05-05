@@ -2,11 +2,15 @@ from queue import Queue
 from threading import Thread
 
 from telegram import Bot
-from telegram.ext import CommandHandler, MessageHandler, Filters, \
-    ConversationHandler, Dispatcher
+from telegram.ext import CommandHandler, Dispatcher
 
-import telegram_bot.logic as logic
-from telegram_bot.states import get_states
+from telegram_bot.handlers.commands.detailed_mode import \
+    handle_detailed_mode_cmd
+from telegram_bot.handlers.commands.examples import handle_examples_cmd
+from telegram_bot.handlers.commands.help import handle_help_cmd
+from telegram_bot.handlers.commands.simple_mode import handle_simple_mode_cmd
+from telegram_bot.handlers.conversation import get_conversation_handler
+from telegram_bot.handlers.errors import handle_errors
 
 
 def create_dispatcher(bot: Bot) -> Dispatcher:
@@ -17,35 +21,29 @@ def create_dispatcher(bot: Bot) -> Dispatcher:
     return dispatcher
 
 
-def init_dispatcher(dispatcher):
-    conversation_handler = ConversationHandler(
-        entry_points=[
-            CommandHandler('start', logic.handle_start),
-            MessageHandler(Filters.all, logic.handle_start_menu)
-        ],
-        states=get_states(),
-        fallbacks=[]
+def init_dispatcher(dispatcher: Dispatcher) -> None:
+    conversation_handler = get_conversation_handler()
+    dispatcher.add_handler(
+        CommandHandler('help', handle_help_cmd)
     )
     dispatcher.add_handler(
-        CommandHandler('help', logic.handle_help)
+        CommandHandler('examples', handle_examples_cmd)
     )
     dispatcher.add_handler(
-        CommandHandler('examples', logic.handle_examples)
+        CommandHandler('simple_mode', handle_simple_mode_cmd)
     )
     dispatcher.add_handler(
-        CommandHandler('simple_mode', logic.handle_simple_mode)
-    )
-    dispatcher.add_handler(
-        CommandHandler('detailed_mode', logic.handle_detailed_mode)
+        CommandHandler('detailed_mode', handle_detailed_mode_cmd)
     )
     dispatcher.add_handler(conversation_handler)
-    dispatcher.add_error_handler(logic.handle_errors)
+    dispatcher.add_error_handler(handle_errors)
 
 
-def start_dispatcher_thread(dispatcher):
+def start_dispatcher_thread(dispatcher: Dispatcher) -> Thread:
     dispatcher_thread = Thread(
         target=dispatcher.start,
         name='dispatcher',
         daemon=True
     )
     dispatcher_thread.start()
+    return dispatcher_thread
