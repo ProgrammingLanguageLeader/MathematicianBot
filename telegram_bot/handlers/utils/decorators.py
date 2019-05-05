@@ -4,7 +4,6 @@ from functools import wraps
 from telegram import ChatAction
 
 from system.db import db
-
 from telegram_bot.models import User
 
 
