@@ -1,11 +1,17 @@
 from flask import current_app, request, Blueprint
-from telegram import Bot
+from telegram.ext import Dispatcher
 from telegram.update import Update
 
 from telegram_bot.dispatcher import create_dispatcher
-
+from telegram_bot.webhook import set_webhook
 
 telegram_blueprint = Blueprint('telegram_blueprint', __name__)
+
+
+@telegram_blueprint.before_app_first_request
+def init_telegram_blueprint():
+    bot = set_webhook()
+    create_dispatcher(bot)
 
 
 @telegram_blueprint.route(
@@ -13,9 +19,8 @@ telegram_blueprint = Blueprint('telegram_blueprint', __name__)
     methods=['POST']
 )
 def webhook():
-    bot = Bot(current_app.config['TELEGRAM_TOKEN'])
-    dispatcher = create_dispatcher(bot)
-    update = Update.de_json(request.get_json(force=True), bot=bot)
+    dispatcher = Dispatcher.get_instance()
+    update = Update.de_json(request.get_json(force=True), bot=dispatcher.bot)
     dispatcher.update_queue.put(update)
     return 'OK'
 

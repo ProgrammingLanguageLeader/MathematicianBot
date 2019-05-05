@@ -48,7 +48,7 @@ class WolframImage(OrderedDict):
 def make_wolfram_request(
         request: str,
         app_id: str,
-        timeout: float = 5
+        timeout: float = 16
 ) -> Optional[WolframResult]:
     params = {
         'input': request,
@@ -68,7 +68,7 @@ def make_wolfram_request(
 def make_simple_wolfram_request(
         request: str,
         app_id: str,
-        timeout: float = 5
+        timeout: float = 16
 ) -> Optional[bytes]:
     params = {
         'input': request,
