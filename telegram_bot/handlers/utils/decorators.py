@@ -9,19 +9,19 @@ from telegram_bot.models import User
 
 def send_typing(func):
     @wraps(func)
-    def decorated(bot, update):
+    def decorated(bot, update, *args, **kwargs):
         chat_id = update.message.chat_id
         bot.send_chat_action(
             chat_id=chat_id,
             action=ChatAction.TYPING
         )
-        return func(bot, update)
+        return func(bot, update, *args, **kwargs)
     return decorated
 
 
 def write_logs(func):
     @wraps(func)
-    def decorated(bot, update):
+    def decorated(bot, update, *args, **kwargs):
         logger = logging.getLogger(__name__)
         user_id = update.message.from_user.id
         user_username = update.message.from_user.username
@@ -29,13 +29,13 @@ def write_logs(func):
         logger.info(
             'User %s: %s - %s' % (user_id, user_username, action)
         )
-        return func(bot, update)
+        return func(bot, update, *args, **kwargs)
     return decorated
 
 
 def remember_new_user(func):
     @wraps(func)
-    def decorated(bot, update):
+    def decorated(bot, update, *args, **kwargs):
         current_user = db.session.query(User).filter_by(
             telegram_id=update.message.from_user.id
         ).all()
@@ -47,5 +47,5 @@ def remember_new_user(func):
                 )
             )
             db.session.commit()
-        return func(bot, update)
+        return func(bot, update, *args, **kwargs)
     return decorated

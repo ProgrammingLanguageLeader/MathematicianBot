@@ -16,7 +16,7 @@ from wolfram.api import make_wolfram_request
 @remember_new_user
 def handle_wolfram_request(bot, update, prefix: str = '') -> int:
     chat_id = update.message.chat_id
-    request = f'{prefix} {update.message.text}'
+    request = f'{prefix} {update.message.text}'.strip()
     answer = make_wolfram_request(request, WOLFRAM_APP_ID)
     current_user = db.session.query(User).filter_by(
         telegram_id=update.message.from_user.id
