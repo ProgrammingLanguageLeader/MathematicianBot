@@ -3,17 +3,11 @@ from typing import List, Optional
 from wolfram.api import WolframResult
 
 
-def parse_wolfram_answer(
-        answer: Optional[WolframResult],
-        simple_mode: bool = False
-) -> List[str]:
+def parse_wolfram_answer(answer: Optional[WolframResult]) -> List[str]:
     if not answer or answer.error or not answer.success:
         return ['Unsuccessful. Check your request and try again']
-    simple_mode_pods_number = 3
-    answer_pods = answer.pods[:simple_mode_pods_number] if simple_mode \
-        else answer.pods
     parsed_answer = []
-    for pod in answer_pods:
+    for pod in answer.pods:
         parsed_answer.append(pod.title)
         for sub in pod.subpods:
             text = sub.plaintext

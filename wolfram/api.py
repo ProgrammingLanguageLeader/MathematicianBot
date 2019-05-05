@@ -1,20 +1,8 @@
 from collections import OrderedDict
+from typing import Optional
 
 import requests
 import xmltodict
-
-
-def make_wolfram_request(request, app_id, timeout=2.5):
-    params = {
-        'input': request,
-        'appid': app_id
-    }
-    answer = requests.get(
-        url='http://api.wolframalpha.com/v2/query',
-        params=params,
-        timeout=timeout
-    )
-    return WolframResult(xmltodict.parse(answer.content))
 
 
 class WolframResult(OrderedDict):
@@ -55,3 +43,43 @@ class WolframImage(OrderedDict):
     def __init__(self, parsed_img: OrderedDict):
         super().__init__(parsed_img)
         self.src = parsed_img['@src']
+
+
+def make_wolfram_request(
+        request: str,
+        app_id: str,
+        timeout: float = 5
+) -> Optional[WolframResult]:
+    params = {
+        'input': request,
+        'appid': app_id
+    }
+    try:
+        answer = requests.get(
+            url='https://api.wolframalpha.com/v2/query',
+            params=params,
+            timeout=timeout
+        )
+        return WolframResult(xmltodict.parse(answer.content))
+    except requests.exceptions.Timeout:
+        return
+
+
+def make_simple_wolfram_request(
+        request: str,
+        app_id: str,
+        timeout: float = 5
+) -> Optional[bytes]:
+    params = {
+        'input': request,
+        'appid': app_id
+    }
+    try:
+        answer = requests.get(
+            url='https://api.wolframalpha.com/v2/simple',
+            params=params,
+            timeout=timeout
+        )
+        return answer.content
+    except requests.exceptions.Timeout:
+        return
