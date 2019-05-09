@@ -1,5 +1,7 @@
 from io import BytesIO
 
+from PIL import Image
+
 from system.config import WOLFRAM_APP_ID
 from system.db import db
 from telegram_bot.handlers.utils.decorators import write_logs, send_typing, \
@@ -42,6 +44,7 @@ def handle_simple_wolfram_request(
         request,
         reply_markup
 ) -> int:
+    max_image_height = 640
     answer = make_simple_wolfram_request(request, WOLFRAM_APP_ID)
     if not answer:
         bot.send_message(
@@ -50,12 +53,17 @@ def handle_simple_wolfram_request(
             reply_markup=reply_markup
         )
     else:
-        bytes_io = BytesIO(answer)
-        bot.send_photo(
-            chat_id=chat_id,
-            photo=bytes_io,
-            reply_markup=reply_markup
-        )
+        image = Image.open(BytesIO(answer))
+        answer_images = crop_image(image, max_image_height)
+        for answer_image in answer_images:
+            image_bytes_io = BytesIO()
+            answer_image.save(image_bytes_io, format=image.format)
+            image_bytes = image_bytes_io.getvalue()
+            bot.send_photo(
+                chat_id=chat_id,
+                photo=BytesIO(image_bytes),
+                reply_markup=reply_markup
+            )
     return MenuEntry.START_MENU.value
 
 
@@ -80,3 +88,15 @@ def handle_detailed_wolfram_request(
         reply_markup=reply_markup
     )
     return MenuEntry.START_MENU.value
+
+
+def crop_image(image, max_image_height: int) -> list:
+    image_width, image_height = image.size
+    cropped_images = []
+    for y_offset in range(0, image_height, max_image_height):
+        box_height = y_offset + max_image_height
+        if box_height > image_height:
+            box_height = image_height
+        box = (0, y_offset, image_width, box_height)
+        cropped_images.append(image.crop(box))
+    return cropped_images
