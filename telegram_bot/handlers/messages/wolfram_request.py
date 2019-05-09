@@ -93,10 +93,12 @@ def handle_detailed_wolfram_request(
 def crop_image(image, max_image_height: int) -> list:
     image_width, image_height = image.size
     cropped_images = []
+    prev_image_offset = 200
     for y_offset in range(0, image_height, max_image_height):
         box_height = y_offset + max_image_height
+        box_y_offset = max(y_offset - prev_image_offset, 0)
         if box_height > image_height:
             box_height = image_height
-        box = (0, y_offset, image_width, box_height)
+        box = (0, box_y_offset, image_width, box_height)
         cropped_images.append(image.crop(box))
     return cropped_images
