@@ -68,11 +68,17 @@ def make_wolfram_request(
 def make_simple_wolfram_request(
         request: str,
         app_id: str,
-        timeout: float = 16
+        timeout: float = 16,
+        width: int = 500,
+        background: str = '193555',
+        foreground: str = 'white'
 ) -> Optional[bytes]:
     params = {
         'input': request,
-        'appid': app_id
+        'appid': app_id,
+        'width': width,
+        'background': background,
+        'foreground': foreground
     }
     try:
         answer = requests.get(
