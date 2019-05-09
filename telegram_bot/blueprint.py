@@ -7,11 +7,11 @@ from telegram_bot.webhook import set_webhook
 
 telegram_blueprint = Blueprint('telegram_blueprint', __name__)
 
-
-@telegram_blueprint.before_app_first_request
-def init_telegram_blueprint():
-    bot = set_webhook()
-    create_dispatcher(bot)
+if not current_app.config['DEBUG']:
+    @telegram_blueprint.before_app_first_request
+    def init_telegram_blueprint():
+        bot = set_webhook()
+        create_dispatcher(bot)
 
 
 @telegram_blueprint.route(
