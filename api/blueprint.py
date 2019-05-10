@@ -21,6 +21,12 @@ def make_simple_request():
     wolfram_request = request.args.get('request')
     if not wolfram_request:
         raise BadRequest('request must be set')
-    response = make_simple_wolfram_request(wolfram_request, app_id, width=300)
+    response = make_simple_wolfram_request(
+        wolfram_request,
+        app_id,
+        width=300,
+        background='white',
+        foreground='black'
+    )
     response_bytes_io = BytesIO(response)
     return send_file(response_bytes_io, mimetype='image/gif')

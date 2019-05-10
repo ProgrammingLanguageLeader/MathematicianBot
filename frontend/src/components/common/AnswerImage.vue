@@ -1,9 +1,6 @@
 <template>
 <b-container class="mt-2 mb-2" v-if="answer">
   <b-row align-h="center">
-    <h4>Answer</h4>
-  </b-row>
-  <b-row align-h="center">
     <b-img id="answer-img" :src="answer" />
   </b-row>
 </b-container>
