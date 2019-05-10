@@ -1,6 +1,6 @@
 <template>
 <b-container class="pt-4">
-  <h1>Page not found</h1>
+  <h3>Page not found</h3>
 </b-container>
 </template>
 
