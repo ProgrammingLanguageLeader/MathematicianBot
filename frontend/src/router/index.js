@@ -9,6 +9,7 @@ import Sum from '@/components/pages/Sum'
 import Plot from '@/components/pages/Plot'
 import Equation from '@/components/pages/Equation'
 import Extrema from '@/components/pages/Extrema'
+import TaylorSeries from '@/components/pages/TaylorSeries'
 
 Vue.use(Router)
 
@@ -53,6 +54,11 @@ const router = new Router({
       path: '/extrema',
       name: 'Extrema',
       component: Extrema
+    },
+    {
+      path: '/taylor-series',
+      name: 'Taylor series',
+      component: TaylorSeries
     },
     {
       path: '*',
