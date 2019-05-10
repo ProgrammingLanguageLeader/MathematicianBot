@@ -5,6 +5,7 @@ import NotFound from '@/components/pages/NotFound'
 import Integral from '@/components/pages/Integral'
 import Derivative from '@/components/pages/Derivative'
 import Limit from '@/components/pages/Limit'
+import Sum from '@/components/pages/Sum'
 
 Vue.use(Router)
 
@@ -29,6 +30,11 @@ const router = new Router({
       path: '/limit',
       name: 'Limit',
       component: Limit
+    },
+    {
+      path: '/sum',
+      name: 'Sum',
+      component: Sum
     },
     {
       path: '*',
