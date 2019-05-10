@@ -1,32 +1,27 @@
 <template>
 <b-container class="pt-4">
   <b-form @submit="onSubmit">
-    <b-form-group label="Fill in the following fields to calculate integral" class="pt-2">
+    <b-form-group label="Fill in the following fields to calculate derivative" class="pt-2">
       <b-input-group prepend="function">
         <b-input
           id="integrating-function"
-          v-model="integratingFunction"
+          v-model="differentiableFunction"
           required
-          placeholder="a function to integrate"
+          placeholder="a function to take derivative"
         />
       </b-input-group>
-      <b-input-group prepend="differential: " class="pt-1">
+      <b-input-group prepend="variable: " class="pt-1">
         <b-input
           v-model="independentVariable"
           required
           placeholder="an independent variable"
         />
       </b-input-group>
-      <b-input-group prepend="from" class="pt-1">
+      <b-input-group prepend="order" class="pt-1">
         <b-input
-          v-model="fromNumber"
-          placeholder="an optional field"
-        />
-      </b-input-group>
-      <b-input-group prepend="to" class="pt-1">
-        <b-input
-          v-model="toNumber"
-          placeholder="an optional field"
+          v-model="order"
+          placeholder="default is 1"
+          type="number"
         />
       </b-input-group>
     </b-form-group>
@@ -61,13 +56,11 @@ export default {
   methods: {
     async onSubmit (event) {
       event.preventDefault()
-      let requestString = `integrate ${this.integratingFunction} d${this.independentVariable}`
-      if (this.fromNumber.length > 0) {
-        requestString += ` from ${this.fromNumber}`
-      }
-      if (this.toNumber.length > 0) {
-        requestString += ` to ${this.toNumber}`
-      }
+      const orderNumber = this.order.length > 0 ? Number(this.order) : 1
+      const differentialOperator = (Number.isInteger(orderNumber) && orderNumber >= 2)
+        ? `d^${orderNumber}/d${this.independentVariable}^${orderNumber}`
+        : `d/d${this.independentVariable}`
+      const requestString = `${differentialOperator} ${this.differentiableFunction}`
       this.fetching = true
       try {
         const response = await makeSimpleRequest(requestString)
@@ -82,10 +75,9 @@ export default {
   },
   data () {
     return {
-      integratingFunction: '',
+      differentiableFunction: '',
       independentVariable: 'x',
-      fromNumber: '',
-      toNumber: '',
+      order: '',
       answer: null,
       fetching: false,
       error: false

@@ -1,8 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Hello from '@/components/pages/Home'
+import Home from '@/components/pages/Home'
 import NotFound from '@/components/pages/NotFound'
 import Integral from '@/components/pages/Integral'
+import Derivative from '@/components/pages/Derivative'
 
 Vue.use(Router)
 
@@ -10,13 +11,18 @@ const router = new Router({
   routes: [
     {
       path: '/',
-      name: 'Hello',
-      component: Hello
+      name: 'Home',
+      component: Home
     },
     {
       path: '/integral',
       name: 'Integral',
       component: Integral
+    },
+    {
+      path: '/derivative',
+      name: 'Derivative',
+      component: Derivative
     },
     {
       path: '*',
