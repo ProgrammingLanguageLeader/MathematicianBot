@@ -7,6 +7,7 @@ import Derivative from '@/components/pages/Derivative'
 import Limit from '@/components/pages/Limit'
 import Sum from '@/components/pages/Sum'
 import Plot from '@/components/pages/Plot'
+import Equation from '@/components/pages/Equation'
 
 Vue.use(Router)
 
@@ -41,6 +42,11 @@ const router = new Router({
       path: '/plot',
       name: 'Plot',
       component: Plot
+    },
+    {
+      path: '/equation',
+      name: 'Equation',
+      component: Equation
     },
     {
       path: '*',
