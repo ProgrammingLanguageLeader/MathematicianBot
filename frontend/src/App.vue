@@ -23,7 +23,9 @@
       </b-collapse>
     </b-container>
   </b-navbar>
-  <router-view />
+  <transition name="fade">
+    <router-view />
+  </transition>
 </div>
 </template>
 
@@ -36,5 +38,13 @@ export default {
 <style>
 .input-group-text {
   width: 110px;
+}
+
+.fade-enter-active, .fade-leave-active {
+  position: fixed;
+  transition: opacity .3s;
+}
+.fade-enter, .fade-leave-to {
+  opacity: 0;
 }
 </style>
