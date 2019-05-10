@@ -8,6 +8,7 @@ import Limit from '@/components/pages/Limit'
 import Sum from '@/components/pages/Sum'
 import Plot from '@/components/pages/Plot'
 import Equation from '@/components/pages/Equation'
+import Extrema from '@/components/pages/Extrema'
 
 Vue.use(Router)
 
@@ -47,6 +48,11 @@ const router = new Router({
       path: '/equation',
       name: 'Equation',
       component: Equation
+    },
+    {
+      path: '/extrema',
+      name: 'Extrema',
+      component: Extrema
     },
     {
       path: '*',
