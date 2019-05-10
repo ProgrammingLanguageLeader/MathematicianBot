@@ -36,16 +36,17 @@ Run the following command under activated virtual environment:
 flask telegram polling
 ```
 
-## Telegram bot with webhook mode
-Run the following command under activated virtual environment:
-```bash
-flask telegram webhook
-```
-
-## Deployment using Heroku
+## Backend deployment using Heroku
 You can host the bot using [Heroku](https://dashboard.heroku.com/). Sign up on this site, install heroku-cli on your PC and run following commands:
 ```bash
 heroku login
 heroku create <your app name>
 git push heroku master
+```
+
+## Frontend deployment using Github Pages
+Simply go to the frontend folder and run a deployment script
+```bash
+cd frontend
+./deploy.sh
 ```
