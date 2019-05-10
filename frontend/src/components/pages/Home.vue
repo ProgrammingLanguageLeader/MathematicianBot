@@ -26,8 +26,8 @@
     <b-list-group-item to="/taylor-series">
       Taylor series
     </b-list-group-item>
-    <b-list-group-item to="/manual-query">
-      Manual query
+    <b-list-group-item href="https://www.wolframalpha.com/">
+      Manual query (WolframAlpha site)
     </b-list-group-item>
   </b-list-group>
 </b-container>
