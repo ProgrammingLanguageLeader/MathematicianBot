@@ -4,6 +4,7 @@ import Home from '@/components/pages/Home'
 import NotFound from '@/components/pages/NotFound'
 import Integral from '@/components/pages/Integral'
 import Derivative from '@/components/pages/Derivative'
+import Limit from '@/components/pages/Limit'
 
 Vue.use(Router)
 
@@ -23,6 +24,11 @@ const router = new Router({
       path: '/derivative',
       name: 'Derivative',
       component: Derivative
+    },
+    {
+      path: '/limit',
+      name: 'Limit',
+      component: Limit
     },
     {
       path: '*',

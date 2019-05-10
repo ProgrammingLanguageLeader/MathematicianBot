@@ -1,12 +1,12 @@
 <template>
 <b-container class="pt-4">
   <b-form @submit="onSubmit">
-    <b-form-group label="Fill in the following fields to calculate derivative" class="pt-2">
+    <b-form-group label="Fill in the following fields to calculate limit" class="pt-2">
       <b-input-group prepend="function">
         <b-input
-          v-model="differentiableFunction"
+          v-model="limitFunction"
           required
-          placeholder="a function to take derivative"
+          placeholder="a function to calculate limit"
         />
       </b-input-group>
       <b-input-group prepend="variable" class="pt-1">
@@ -16,11 +16,11 @@
           placeholder="an independent variable"
         />
       </b-input-group>
-      <b-input-group prepend="order" class="pt-1">
+      <b-input-group prepend="tends to" class="pt-1">
         <b-input
-          v-model="order"
-          placeholder="default is 1"
-          type="number"
+          v-model="tendingNumber"
+          required
+          placeholder="variable -> <this number>"
         />
       </b-input-group>
     </b-form-group>
@@ -55,11 +55,7 @@ export default {
   methods: {
     async onSubmit (event) {
       event.preventDefault()
-      const orderNumber = this.order.length > 0 ? Number(this.order) : 1
-      const differentialOperator = (Number.isInteger(orderNumber) && orderNumber >= 2)
-        ? `d^${orderNumber}/d${this.independentVariable}^${orderNumber}`
-        : `d/d${this.independentVariable}`
-      const requestString = `${differentialOperator} ${this.differentiableFunction}`
+      const requestString = `limit ${this.limitFunction} when ${this.independentVariable} -> ${this.tendingNumber}`
       this.fetching = true
       try {
         const response = await makeSimpleRequest(requestString)
@@ -74,9 +70,9 @@ export default {
   },
   data () {
     return {
-      differentiableFunction: '',
+      limitFunction: '',
       independentVariable: 'x',
-      order: '',
+      tendingNumber: 'infinity',
       answer: null,
       fetching: false,
       error: false

@@ -4,13 +4,12 @@
     <b-form-group label="Fill in the following fields to calculate integral" class="pt-2">
       <b-input-group prepend="function">
         <b-input
-          id="integrating-function"
           v-model="integratingFunction"
           required
           placeholder="a function to integrate"
         />
       </b-input-group>
-      <b-input-group prepend="differential: " class="pt-1">
+      <b-input-group prepend="differential" class="pt-1">
         <b-input
           v-model="independentVariable"
           required
