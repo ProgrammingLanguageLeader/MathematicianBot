@@ -40,7 +40,7 @@ export default {
 </script>
 
 <style scoped>
-  h3 {
-    padding: 10px;
-  }
+h3 {
+  padding: 10px;
+}
 </style>

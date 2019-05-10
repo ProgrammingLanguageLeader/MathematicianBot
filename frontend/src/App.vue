@@ -34,4 +34,7 @@ export default {
 </script>
 
 <style>
+.input-group-text {
+  width: 110px;
+}
 </style>
