@@ -37,7 +37,7 @@ def get_conversation_states_with_handlers() -> dict:
     return {
         MenuEntry.START_MENU.value: [
             MessageHandler(Filters.text, handle_start_menu),
-            MessageHandler(Filters.all, handle_unknown_message)
+            MessageHandler(~Filters.text, handle_unknown_message)
         ],
         MenuEntry.MANUAL_REQUEST.value: [
             MessageHandler(Filters.text, handle_manual_request)

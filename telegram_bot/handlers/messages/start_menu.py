@@ -10,6 +10,8 @@ from telegram_bot.handlers.messages.mode_toggling import handle_mode_toggling
 from telegram_bot.handlers.messages.plot import handle_plot
 from telegram_bot.handlers.messages.sum import handle_sum
 from telegram_bot.handlers.messages.taylor_series import handle_taylor_series
+from telegram_bot.handlers.messages.unknown_message import \
+    handle_unknown_message
 from telegram_bot.handlers.messages.wolfram_request import \
     handle_wolfram_request
 from telegram_bot.handlers.utils.decorators import send_typing, \
@@ -20,6 +22,8 @@ from telegram_bot.handlers.utils.menu_entries import MenuEntry
 @send_typing
 @remember_new_user
 def handle_start_menu(bot, update) -> int:
+    if not update.message.text:
+        return handle_unknown_message(bot, update)
     text = update.message.text.lower()
     handlers_dict = {
         'examples': handle_examples_cmd,
