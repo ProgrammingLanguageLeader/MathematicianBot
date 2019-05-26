@@ -1,6 +1,7 @@
 from telegram_bot.handlers.utils.menu_entries import MenuEntry
 from telegram_bot.handlers.utils.reply_markup import create_main_reply_markup
-from telegram_bot.handlers.utils.decorators import write_logs, send_typing, remember_new_user
+from telegram_bot.handlers.utils.decorators import write_logs, \
+    send_typing, remember_new_user
 
 
 @write_logs
