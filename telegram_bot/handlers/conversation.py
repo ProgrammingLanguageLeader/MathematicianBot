@@ -9,7 +9,6 @@ from telegram_bot.handlers.commands.examples import handle_examples_cmd
 from telegram_bot.handlers.commands.help import handle_help_cmd
 from telegram_bot.handlers.commands.simple_mode import handle_simple_mode_cmd
 from telegram_bot.handlers.commands.start import handle_start_cmd
-from telegram_bot.handlers.messages.manual_request import handle_manual_request
 from telegram_bot.handlers.messages.start_menu import handle_start_menu
 from telegram_bot.handlers.messages.unknown_message import \
     handle_unknown_message
@@ -40,7 +39,7 @@ def get_conversation_states_with_handlers() -> dict:
             MessageHandler(~Filters.text, handle_unknown_message)
         ],
         MenuEntry.MANUAL_REQUEST.value: [
-            MessageHandler(Filters.text, handle_manual_request)
+            MessageHandler(Filters.text, handle_wolfram_request)
         ],
         MenuEntry.INTEGRAL.value: [
             MessageHandler(
