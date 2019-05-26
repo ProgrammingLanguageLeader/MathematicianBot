@@ -3,6 +3,11 @@ from functools import partial
 from telegram.ext import ConversationHandler, CommandHandler
 from telegram.ext import MessageHandler, Filters
 
+from telegram_bot.handlers.commands.detailed_mode import \
+    handle_detailed_mode_cmd
+from telegram_bot.handlers.commands.examples import handle_examples_cmd
+from telegram_bot.handlers.commands.help import handle_help_cmd
+from telegram_bot.handlers.commands.simple_mode import handle_simple_mode_cmd
 from telegram_bot.handlers.commands.start import handle_start_cmd
 from telegram_bot.handlers.messages.manual_request import handle_manual_request
 from telegram_bot.handlers.messages.start_menu import handle_start_menu
@@ -15,6 +20,10 @@ def get_conversation_handler() -> ConversationHandler:
     return ConversationHandler(
         entry_points=[
             CommandHandler('start', handle_start_cmd),
+            CommandHandler('help', handle_help_cmd),
+            CommandHandler('examples', handle_examples_cmd),
+            CommandHandler('simple_mode', handle_simple_mode_cmd),
+            CommandHandler('detailed_mode', handle_detailed_mode_cmd),
             MessageHandler(Filters.all, handle_start_menu)
         ],
         states=get_conversation_states_with_handlers(),
@@ -25,8 +34,7 @@ def get_conversation_handler() -> ConversationHandler:
 def get_conversation_states_with_handlers() -> dict:
     return {
         MenuEntry.START_MENU.value: [
-            MessageHandler(Filters.text, handle_start_menu),
-            MessageHandler(Filters.all, handle_wolfram_request)
+            MessageHandler(Filters.text, handle_start_menu)
         ],
         MenuEntry.MANUAL_REQUEST.value: [
             MessageHandler(Filters.text, handle_manual_request)
