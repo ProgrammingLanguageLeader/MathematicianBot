@@ -11,6 +11,8 @@ from telegram_bot.handlers.commands.simple_mode import handle_simple_mode_cmd
 from telegram_bot.handlers.commands.start import handle_start_cmd
 from telegram_bot.handlers.messages.manual_request import handle_manual_request
 from telegram_bot.handlers.messages.start_menu import handle_start_menu
+from telegram_bot.handlers.messages.unknown_message import \
+    handle_unknown_message
 from telegram_bot.handlers.messages.wolfram_request import \
     handle_wolfram_request
 from telegram_bot.handlers.utils.menu_entries import MenuEntry
@@ -34,7 +36,8 @@ def get_conversation_handler() -> ConversationHandler:
 def get_conversation_states_with_handlers() -> dict:
     return {
         MenuEntry.START_MENU.value: [
-            MessageHandler(Filters.text, handle_start_menu)
+            MessageHandler(Filters.text, handle_start_menu),
+            MessageHandler(Filters.all, handle_unknown_message)
         ],
         MenuEntry.MANUAL_REQUEST.value: [
             MessageHandler(Filters.text, handle_manual_request)
