@@ -46,13 +46,7 @@ def handle_simple_wolfram_request(
 ) -> int:
     max_image_height = 640
     answer = make_simple_wolfram_request(request, WOLFRAM_APP_ID)
-    if not answer:
-        bot.send_message(
-            chat_id=chat_id,
-            text='Unsuccessful. Check your request and try again',
-            reply_markup=reply_markup
-        )
-    else:
+    try:
         image = Image.open(BytesIO(answer))
         answer_images = crop_image(image, max_image_height)
         for answer_image in answer_images:
@@ -64,6 +58,12 @@ def handle_simple_wolfram_request(
                 photo=BytesIO(image_bytes),
                 reply_markup=reply_markup
             )
+    except OSError:
+        bot.send_message(
+            chat_id=chat_id,
+            text='Unsuccessful. Check your request and try again',
+            reply_markup=reply_markup
+        )
     return MenuEntry.START_MENU.value
 
 
