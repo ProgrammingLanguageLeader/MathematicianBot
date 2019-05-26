@@ -11,7 +11,7 @@ def handle_unknown_message(bot, update) -> int:
     chat_id = update.message.chat_id
     bot.send_message(
         text='I don\'t know what to say. '
-             'Anyway catch the sticker \xF0\x9F\x98\x89',
+             'Anyway catch the sticker 😉',
         chat_id=chat_id,
         reply_markup=create_main_reply_markup()
     )
